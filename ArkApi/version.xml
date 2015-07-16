@@ -1,9 +1,225 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AppUpdates>
+<AppUpdate>
+    <Version>3.1</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Added Delete Server confirmation check.</li>
+	<li>Made Ark.dll compatible with Android and Windows Mobile 8/8.1/10</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>3.0</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Added the option in the Scheduler to actually SHUTDOWN the server :P</li>
+	<li>To run this command manually from the console window, run DoExit. Might be worth running a SaveWorld right before it :P</li>
+	<li>Also, to complete your shutdown schedules, I've added the SaveWorld command to the scheduler.</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.9</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>UI Overhaul. Cleaned up some of the things bugging me.</li>
+	<li>Added the ability to Enable / Disable Tasks from the Scheduled Task Library / Collection</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.8</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Removed the word Minutes from Delay Selection Task. No longer correct. I really need to implement minor version versioning :P</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.7</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Changed Scheduler system to include an Interval Unit of Measurement: Seconds, Minutes, Hours and Days :)</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.6</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Complete overhaul of the Scheduled Task system. You can now create a task queue. Want to add Delays? No problem - Build a sequence of events and they will be processed in the full task :)</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.5</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Added buttons to the settings screens under Chat Settings, and Console Settings to open the Log Directory for you. Chat is currently logged (Saved) when you actually close the application. I plan to change this to write every line.</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.4</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>Switch Scheduled Task back to Minutes from Seconds :)</li>
+	</ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.3</Version>
+    <ChangeNotes>
+      <![CDATA[
+	<ul>
+	<li>
+       <p>Better Scheduled Task handling internally.<br/>
+	Tasks should hopefully run now without issue</p>
+	</li>
+	<li>Fixed a potential issue with chat display</li>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.2</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Added About Screen to Show Change Log, And shamelessly plug social media / donation buttons :P</li>
+	<li>You access this screen using the About button near the minimize button</li>
+	<li>Change log screen can also be used to force install an update without having to restart the application to detect the update</li>
+        <li>Fixed player refresh in the case of no connected users, and reflected this in the console.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.1</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>
+	Added Extra Settings in General Settings.
+	<ul>
+	<li>Minimize to System Tray</li>
+	<li>Close to System Tray</li>
+	<li>Fixed Topmost</li>
+	<li>Added Auto Reconnect after 5 Minutes to temporarily work around the Ark Chat Bug</li>
+	<li>Added Auto Connect To Chat after a reconnect / connection. Useful if your using the above option, and logging chat :)</li>
+	<li>After toggling either Auto Reconnect 5 minutes / Auto Chat COnnect, you have to disconnect and reconnect to your server for them to work.</li>
+	</ul>
+	</li>
+        <li>Fixed Player Refresh Issues For People</li>
+        <li>Tested Both Ban and Kick on Myself (Works)</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>2.0</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Fixed Secondary Ban Button (None Right Click on player Method)</li>
+        <li>Added Minimise to System Tray (Bar near the Clock)</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.9</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Fixed Logging (Multiple messages)</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.8</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Finally fixed the issue with the player list some poeple were having.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.7</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Removed Steam.dll which was showing as a false positive in some Virus scanners (I'm guessing because of the name). This was a library I was using to show previous vac status's for players. I Hadn't finished implementing it - so I will strip it out aand roll my own library for peace of mind.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.6</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Fixed ConsoleLog Binding.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.5</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Fixed Update Window Animation issue.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+<AppUpdate>
+    <Version>1.4</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Cleaned up the UI in little places.</li>
+        <li>Reduced application size by removing redundant code blocks.</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+ <AppUpdate>
+    <Version>1.3</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Added Chat Tab (Server Chat).<br/>See the new chat options screen in the settings panel to configure your Chat nickname.</li>
+        <li>Changed Server Response Opcode Values Again</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
   <AppUpdate>
     <Version>1.2</Version>
     <ChangeNotes>
       <![CDATA[
+	<p>After this updated, Please reenter your server settings.Future versions will automatically copy this data across. The current installed application (before an update occurs) is responsible for performing the actual update, so that needs to be updated to include this fix.</p>
         <ul>
         <li>Should have fixed Player Refresh</li>
         <li>Added Scheduled Tasks / Commands</li>
