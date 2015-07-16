@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Color x:Key="AccentColor">#448AFF</Color>
+    <Color x:Key="AccentForegroundColor">White</Color>
+    
+    <Color x:Key="WindowBackgroundColor">#F9F9F9</Color>
+    <Color x:Key="WindowForegroundColor">Black</Color>
+    
+    <Color x:Key="SectionBorderColor">#C8C8C8</Color>
+    <Color x:Key="SectionBorderShadowColor">#F0F0F0</Color>
+    <Color x:Key="SectionBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="SectionForegroundColor">Black</Color>
+</ResourceDictionary>

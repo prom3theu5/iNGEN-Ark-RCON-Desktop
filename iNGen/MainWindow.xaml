@@ -1,0 +1,151 @@
+﻿<metro:MetroWindow x:Class="iNGen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:iNGen.Controls"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:views="clr-namespace:iNGen.Views"
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="iNGen : ARK RCON CLIENT" Height="600" Width="800"
+        WindowTransitionsEnabled="False"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Closing="ApplicationClosing" Initialized="Window_Initialized" Icon="Resources/Images/iconrawsmall.png" Activated="Window_Activated" Topmost="{Binding GeneralSettings.KeepWindowTopmost}" StateChanged="MetroWindow_StateChanged" Deactivated="MetroWindow_Deactivated">
+    <metro:MetroWindow.RightWindowCommands>
+        <metro:WindowCommands>
+            <Button Content="About iNGen" x:Name="ShowAboutApp" Click="ShowAboutApp_Click" />
+        </metro:WindowCommands>
+    </metro:MetroWindow.RightWindowCommands>
+
+    <metro:MetroWindow.Flyouts>
+        <metro:FlyoutsControl>
+            <metro:Flyout Header="Add New Scheduled Task"
+                             AnimateOpacity="True"
+                             IsModal="True"
+                             Theme="Adapt"
+                             Width="400"
+                             Position="Right"
+                             IsOpen="False"
+                             CloseButtonVisibility="Collapsed"
+                             >
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Horizontal" Margin="10,5,0,0">
+                        <Label Width="150">Enter Task Name: </Label>
+                        <TextBox x:Name="TaskNameBox" Margin="10,0,0,0" Width="200"></TextBox>
+                    </StackPanel>
+                        <Label HorizontalAlignment="Left" Margin="10,20,0,0">Task Commands List</Label>
+                    <DataGrid x:Name="TaskCommandList" IsReadOnly="True" AutoGenerateColumns="False" Margin="10" MaxHeight="200" MinHeight="50" AlternatingRowBackground="LightGray" BorderBrush="Black" BorderThickness="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="CommandType" Binding="{Binding CommandType}" />
+                                <DataGridTextColumn Header="Variable" Binding="{Binding Variable}" />
+                                <DataGridTextColumn Header="Extra" Binding="{Binding ExtraInfo}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal" Margin="10">
+                    <Button x:Name="DeleteTaskCommand" Click="DeleteTaskCommand_Click" Width="160" HorizontalAlignment="Left" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Delete Selected</Label>
+                            </StackPanel>
+                        </Button>
+                    <Button x:Name="AddTaskCommand" Click="AddTaskCommand_Click" Width="180" HorizontalAlignment="Left" Margin="20,0,0,0" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/confirm.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Add New Command</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Label Width="150">Is Task Repeatable?</Label>
+                        <CheckBox x:Name="TaskRepeatableCheckbox" Margin="10,5,0,0" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Label Width="150">Is Task Enabled?</Label>
+                        <CheckBox x:Name="TaskEnabledCheckbox" Margin="10,5,0,0" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Label Width="150">Task Delay:</Label>
+                        <TextBox x:Name="TaskIntervalBox" Margin="10,0,0,0" Width="100">1</TextBox>
+                        <ComboBox x:Name="TaskIntervalPeriodVariable" Width="90" Margin="10,0,0,0" SelectedIndex="0">
+                            <ComboBoxItem>Second(s)</ComboBoxItem>
+                            <ComboBoxItem>Minute(s)</ComboBoxItem>
+                            <ComboBoxItem>Hour(s)</ComboBoxItem>
+                            <ComboBoxItem>Day(s)</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10,20,0,0">
+                        <Button x:Name="CancelAddNewTask" Click="CancelAddNewTask_Click" Width="160" Height="30" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Cancel Command</Label>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="ConfirmAddNewTask" Click="ConfirmAddNewTask_Click" Margin="20,0,0,0" Width="180" Height="30" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/confirm.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Create New Task</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </metro:Flyout>
+            <metro:Flyout Header="Add Task Command"
+                            x:Name="AddTaskCommandWindow"
+                             AnimateOpacity="True"
+                             IsModal="True"
+                             Theme="Adapt"
+                             Width="400"
+                             Position="Right"
+                             IsOpen="False"
+                             CloseButtonVisibility="Collapsed"
+                             >
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <StackPanel Orientation="Horizontal" Margin="10,5,0,0">
+                        <Label Width="150">Select Command Type:</Label>
+                        <ComboBox Height="25" Width="200" Margin="10,0,0,0" x:Name="CommandTypeCombo" DisplayMemberPath="Description" SelectedValue="value" SelectionChanged="CommandTypeCombo_SelectionChanged" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" x:Name="DelayForm" Margin="10" Visibility="Collapsed">
+                        <Label Width="150">Enter Minutes:</Label>
+                        <TextBox x:Name="NewTaskDelayVariable" Width="100" Margin="10,0,0,0" />
+                        <ComboBox x:Name="NewTaskDelayPeriodVariable" Width="90" Margin="10,0,0,0" SelectedIndex="0">
+                            <ComboBoxItem>Second(s)</ComboBoxItem>
+                            <ComboBoxItem>Minute(s)</ComboBoxItem>
+                            <ComboBoxItem>Hour(s)</ComboBoxItem>
+                            <ComboBoxItem>Day(s)</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" x:Name="BroadcastForm" Margin="10" Visibility="Collapsed">
+                        <Label Width="150">Enter Message Text:</Label>
+                        <TextBox x:Name="NewTaskBroadcastVariable" Width="200" Margin="10,0,0,0" Height="200" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" x:Name="CustomForm" Margin="10" Visibility="Collapsed">
+                        <Label Width="150">Enter Full Command:</Label>
+                        <TextBox x:Name="NewTaskCustomVariable" Width="200" Margin="10,0,0,0" Height="200" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10">
+                        <Button x:Name="CancelAddTaskCommand" Click="CancelAddTaskCommand_Click" Width="160" HorizontalAlignment="Left" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Cancel Add Task</Label>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="ConfirmAddTaskCommand" Click="ConfirmAddTaskCommand_Click" Width="180" HorizontalAlignment="Left" Margin="20,0,0,0" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/confirm.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Confirm Add Task</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </metro:Flyout>
+        </metro:FlyoutsControl>
+    </metro:MetroWindow.Flyouts>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <views:ConnectionBarView/>
+        <views:NavigationView Grid.Row="1" x:Name="NavigationViewObject" />
+    </Grid>
+</metro:MetroWindow>

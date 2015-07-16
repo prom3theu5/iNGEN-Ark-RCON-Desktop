@@ -1,0 +1,134 @@
+﻿<UserControl x:Class="iNGen.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:iNGen.Controls"
+             xmlns:Helpers="clr-namespace:iNGen.Helpers"
+             xmlns:converters="clr-namespace:PTK.WPF.Converters;assembly=InlineToolkit"
+             DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Servers -->
+        <controls:Section Grid.Column="0" Header="Servers">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- New Server Button -->
+                <Border Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 0, 0, 1" Padding="10">
+                    <Button Click="NewServerButtonClick" Height="30">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="25" Source="/iNGen;component/Resources/Images/open.png" />
+                            <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">New Server</Label>
+                        </StackPanel>
+                    </Button>
+                </Border>
+                
+                <!-- Servers -->
+                <ListView Grid.Row="1" x:Name="ServersListView" ItemsSource="{Binding ServerModelSet.Servers}" SelectionMode="Single" KeyDown="ServersListView_KeyDown">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl MouseDoubleClick="ServerListViewItemDoubleClick">
+                                <Grid Height="30" Background="Transparent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Server DisplayName-->
+                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" Margin="10, 0, 0, 0"/>
+                                    
+                                    <!-- IsConnected tag-->
+                                    <Border Grid.Column="1" Margin="0, 0, 10, 0" VerticalAlignment="Center" Background="{DynamicResource SectionBackgroundBrush}" Height="16" Visibility="{Binding IsConnected, Converter={StaticResource TrueToVisibleConverter}}">
+                                        <TextBlock Text="connected" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10"  FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" Margin="6, 0, 6, 0"/>
+                                    </Border>
+                                </Grid>
+                            </ContentControl>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                
+                <!-- Server Details -->
+                <Border Grid.Row="2" Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 1, 0, 0" Padding="10" DataContext="{Binding SelectedItem, ElementName=ServersListView}" IsEnabled="{Binding HasItems, ElementName=ServersListView}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Display Name" VerticalAlignment="Center" Margin="0, 0, 8, 8"/>
+                            <TextBox Grid.Column="1" Grid.Row="0" x:Name="DisplayNameTextBox" Text="{Binding DisplayName, Mode=TwoWay}" Margin="0, 0, 0, 8"/>
+                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Hostname/IP" VerticalAlignment="Center" Margin="0, 0, 8, 8"/>
+                            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Hostname, Mode=TwoWay}" Margin="0, 0, 0, 8"/>
+                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Rcon Port" VerticalAlignment="Center" Margin="0, 0, 8, 8"/>
+                            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Port, Mode=TwoWay}" Margin="0, 0, 0, 8"/>
+                            <TextBlock Grid.Column="0" Grid.Row="3" Text="Password" VerticalAlignment="Center" Margin="0, 0, 8, 8"/>
+                            <PasswordBox x:Name="PasswordBox" Grid.Column="1" Grid.Row="3" Helpers:PasswordBoxAssistant.BindPassword="true" Helpers:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                       
+                        <!-- Server Actions -->
+                        <Grid Margin="0, 20, 0, 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Button Margin="0, 0, 5, 0" Width="Auto" Click="DeleteServerButtonClick" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBooleanConverter}}" Height="30">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                    <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Delete</Label>
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="1" Margin="5, 0, 0, 0" Width="Auto" Click="ConnectButtonClick" Visibility="{Binding IsConnected, Converter={StaticResource FalseToVisibleConverter}}" Height="30">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Height="25" Source="/iNGen;component/Resources/Images/connect.png" />
+                                    <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Connect</Label>
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="1" Margin="5, 0, 0, 0" Width="Auto" Click="DisconnectButtonClick" Height="30">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource MultiTrueToVisibleConverter}">
+                                        <Binding Path="IsConnected"/>
+                                        <Binding Path="HasItems" ElementName="ServersListView"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                    <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Disconnect</Label>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </controls:Section>
+        
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1"/>
+        
+        <!-- iNGen System Messages -->
+        <controls:Section Grid.Column="2" Header="iNGen Log">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" x:Name="ApplicationLogScrollViewer">
+                <TextBox x:Name="ApplicationLogTextBox" Text="{Binding ApplicationLog}" Padding="8, 8, 8, 8" FontFamily="Consolas" IsManipulationEnabled="False" BorderThickness="0" Height="Auto" VerticalContentAlignment="Bottom" IsReadOnly="True" IsReadOnlyCaretVisible="False" />
+            </ScrollViewer>
+        </controls:Section>
+    </Grid>
+</UserControl>

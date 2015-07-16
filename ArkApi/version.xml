@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AppUpdates>
+  <AppUpdate>
+    <Version>1.2</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Should have fixed Player Refresh</li>
+        <li>Added Scheduled Tasks / Commands</li>
+        <li>Changed Server Response Opcode Values</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+  <AppUpdate>
+    <Version>1.1</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Added Auto Updater</li>
+        <li>To Come: Player Refresh Update</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+  <AppUpdate>
+    <Version>1.0</Version>
+    <ChangeNotes>
+      <![CDATA[
+        <ul>
+        <li>Initial Release</li>
+        </ul>
+     ]]>
+    </ChangeNotes>
+  </AppUpdate>
+  </AppUpdates>

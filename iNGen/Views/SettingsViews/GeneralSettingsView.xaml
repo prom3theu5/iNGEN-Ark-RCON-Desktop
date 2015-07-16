@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="iNGen.Views.SettingsViews.GeneralSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             DataContext="{Binding ViewModel.GeneralSettings, RelativeSource={RelativeSource Self}}"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <Grid>
+        <StackPanel Margin="10, 10, 0, 10">
+            <TextBlock Text="Misc"/>
+            <CheckBox Content="Keep iNGen's window on top" IsChecked="{Binding KeepWindowTopmost, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <CheckBox Content="Auto reconnect when disconnected from server" IsChecked="{Binding IsAutoReconnectEnabled, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <CheckBox Content="Auto reconnect Every Five Minutes (Requires Reconnect After Changing)" IsChecked="{Binding DoReconnectEveryFiveMinutes, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <CheckBox Content="Auto Start Chat On Connect (Requires Reconnect After Changing)" IsChecked="{Binding AutoStartChat, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <CheckBox Content="Minimize to System Tray" IsChecked="{Binding MinimizeToSystemTray, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <CheckBox Content="Close to System Tray" IsChecked="{Binding CloseToSystemTray, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

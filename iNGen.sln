@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iNGen", "iNGen\iNGen.csproj", "{A271057E-0079-407E-9193-EB3E911EEA3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prom3theu5Toolkit", "Prom3theu5Toolkit\Prom3theu5Toolkit.csproj", "{83EB2B16-F3E3-4263-B2DE-0892895CF692}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ark", "Ark\Ark.csproj", "{0317BD71-5A48-45C0-97E4-F336C832C232}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A271057E-0079-407E-9193-EB3E911EEA3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A271057E-0079-407E-9193-EB3E911EEA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A271057E-0079-407E-9193-EB3E911EEA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A271057E-0079-407E-9193-EB3E911EEA3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83EB2B16-F3E3-4263-B2DE-0892895CF692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83EB2B16-F3E3-4263-B2DE-0892895CF692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83EB2B16-F3E3-4263-B2DE-0892895CF692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83EB2B16-F3E3-4263-B2DE-0892895CF692}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0317BD71-5A48-45C0-97E4-F336C832C232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0317BD71-5A48-45C0-97E4-F336C832C232}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0317BD71-5A48-45C0-97E4-F336C832C232}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0317BD71-5A48-45C0-97E4-F336C832C232}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
