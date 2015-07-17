@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using PropertyChanged;
+using ProtoBuf;
 using PTK.ModelManager;
 using PTK.Utils;
 using PTK.WPF;
@@ -73,6 +74,7 @@ namespace iNGen.Models
         }
     }
 
+    [ImplementPropertyChanged]
     [ProtoContract]
     public class ScheduledTask
     {
@@ -112,6 +114,7 @@ namespace iNGen.Models
    }
 
     [ProtoContract]
+    [ImplementPropertyChanged]
     public class TaskCommand
     {
        [ProtoMember(1)]

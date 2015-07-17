@@ -1,5 +1,4 @@
-﻿using PTK.WPF;
-using iNGen.Views;
+﻿using iNGen.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using MahApps.Metro.Controls;
+using GalaSoft.MvvmLight;
 
 namespace iNGen.ViewModels
 {
-    public class NavigationViewModel: Notifiable
+    public class NavigationViewModel: ViewModelBase
     {
         public ObservableCollection<NavigationItem> NavigationItems {get; set;}
 

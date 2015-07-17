@@ -1,4 +1,4 @@
-﻿using Ark.Models;
+﻿using iNGen.Models;
 using PTK.WPF;
 using System;
 using System.Collections.Generic;
@@ -24,6 +24,11 @@ namespace iNGen.ViewModels
         }
 
         void Players_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChanged();
+        }
+
+        public void CollectionChanged()
         {
             OnPropertyChanged("Players");
         }

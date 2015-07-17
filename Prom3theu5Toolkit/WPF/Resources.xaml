@@ -7,5 +7,5 @@
     <converters:StringToVisibilityConverter x:Key="NullStringToHiddenConverter" />
     <converters:ObjectToBoolConverter x:Key="NullObjectToFalseConverter" />
     <converters:BooleanToTextWrappingConverter x:Key="TrueToWrapConverter" />
-    <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    <converters:InverseBooleanConverter x:Key="InverseBooleanConverters"/>
 </ResourceDictionary>

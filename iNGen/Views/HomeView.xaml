@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:iNGen.Controls"
              xmlns:Helpers="clr-namespace:iNGen.Helpers"
-             xmlns:converters="clr-namespace:PTK.WPF.Converters;assembly=InlineToolkit"
-             DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
+             xmlns:converters="clr-namespace:PTK.WPF.Converters;assembly=Prom3theu5Toolkit"
+             DataContext="{Binding Home, Source={StaticResource Locator}}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -27,7 +27,7 @@
                 
                 <!-- New Server Button -->
                 <Border Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 0, 0, 1" Padding="10">
-                    <Button Click="NewServerButtonClick" Height="30">
+                    <Button Command="{Binding NewServerCommand}" Height="30">
                         <StackPanel Orientation="Horizontal">
                             <Image Height="25" Source="/iNGen;component/Resources/Images/open.png" />
                             <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">New Server</Label>
@@ -36,7 +36,7 @@
                 </Border>
                 
                 <!-- Servers -->
-                <ListView Grid.Row="1" x:Name="ServersListView" ItemsSource="{Binding ServerModelSet.Servers}" SelectionMode="Single" KeyDown="ServersListView_KeyDown">
+                <ListView Grid.Row="1" x:Name="ServersListView" ItemsSource="{Binding ServerModelSet.Servers}" SelectionMode="Single" KeyDown="ServersListView_KeyDown" SelectedItem="{Binding SelectedServer}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl MouseDoubleClick="ServerListViewItemDoubleClick">
@@ -59,7 +59,7 @@
                 </ListView>
                 
                 <!-- Server Details -->
-                <Border Grid.Row="2" Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 1, 0, 0" Padding="10" DataContext="{Binding SelectedItem, ElementName=ServersListView}" IsEnabled="{Binding HasItems, ElementName=ServersListView}">
+                <Border Grid.Row="2" Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 1, 0, 0" Padding="10" DataContext="{Binding SelectedServer}" IsEnabled="{Binding HasItems, ElementName=ServersListView}">
                     <StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -91,7 +91,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Button Margin="0, 0, 5, 0" Width="Auto" Click="DeleteServerButtonClick" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBooleanConverter}}" Height="30">
+                            <Button Margin="0, 0, 5, 0" Width="Auto" Command="{Binding DeleteSelectedServerCommand}" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBooleanConverters}}" Height="30" DataContext="{Binding Home, Source={StaticResource Locator}}">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
                                     <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Delete</Label>

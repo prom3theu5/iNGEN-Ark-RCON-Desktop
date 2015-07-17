@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:iNGen.Controls"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
              mc:Ignorable="d" 
-             d:DesignHeight="1000" d:DesignWidth="1000">
+             d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <ContextMenu x:Key="PlayersViewContextMenu">
             <MenuItem Header="Open Steam Profile" Click="OpenSteamProfileButtonClick" />
             <Separator />
@@ -16,7 +18,10 @@
             <Separator />
             <MenuItem Header="Kick" Click="KickButtonClick" />
             <MenuItem Header="Ban" Click="BanButtonClick" />
+            <Separator />
+            <MenuItem Header="Private Message" Click="PrivateMessageClick" />
         </ContextMenu>
+        
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -57,22 +62,44 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <DataGrid Grid.Row="1" x:Name="PlayersListView" ItemsSource="{Binding Players}" AutoGenerateColumns="False" IsManipulationEnabled="False" HorizontalGridLinesBrush="#EEEEEE" RowHeight="24" IsReadOnly="True" FontFamily="Arial">
+                    
+                    
+                    <DataGrid Grid.Row="1" x:Name="PlayersListView" ItemsSource="{Binding Players}" AutoGenerateColumns="False" IsManipulationEnabled="False" HorizontalGridLinesBrush="#EEEEEE" RowHeight="24" IsReadOnly="True" FontFamily="Arial" Background="#333333">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn MinWidth="10" Width="10" MaxWidth="10" CanUserReorder="False" CanUserResize="False" CanUserSort="False"/>
-                            <DataGridTextColumn Header="Player Name" MinWidth="150" Width="*" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Header="SteamID" MinWidth="200" Binding="{Binding SteamID}"/>
+                            <DataGridTextColumn Header="Player Name" Width="*" Binding="{Binding Name}" Foreground="HotPink" FontWeight="Bold" FontSize="16">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="SteamID" Width="*" Binding="{Binding SteamID}" Foreground="HotPink" FontSize="16">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
 
+                        <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black" />
+                                                <Setter Property="BorderBrush" Value="Black" />
+                                                <Setter Property="Foreground" Value="White" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Padding" Value="5,5,5,5" />
+                                    </Style>
+                        </DataGrid.CellStyle>
+                        
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="#333333" />
                                 <Setter Property="ContextMenu" Value="{StaticResource PlayersViewContextMenu}"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Foreground" Value="LimeGreen"/>
-                                        <Setter Property="Background" Value="Salmon" />
-                                    </Trigger>
-                                </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
                     </DataGrid>
@@ -92,6 +119,16 @@
                     <!-- Player Details -->
                     <Border Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 0, 0, 1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <ScrollViewer.Style>
+                                <Style TargetType="ScrollViewer">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItem,ElementName=PlayersListView}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ScrollViewer.Style>
                             <Grid Margin="10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -99,21 +136,72 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <!-- Steam Details -->
-                                <Grid Grid.Row="1">
+                                <Grid Margin="0, 0, 0, 10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="Black" Width="64" Height="64" Margin="0, 0, 10, 0">
+                                            <Image Source="{Binding AvatarMediumURL}" />
+                                    </Border>
+                                </Grid>
+
+                                <Grid Grid.Row="1" Margin="0,20,0,0">
                                     <StackPanel>
+                                        <Image Source="{Binding CountryImage}" Stretch="None" HorizontalAlignment="Left" Margin="0, 0, 0, 10" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="NearestNeighbor" UseLayoutRounding="True"/>
                                         <TextBlock Margin="0, 0, 0, 10">
-                                            <Run Text="Name" Foreground="#93999D"/>
+                                            <Run Text="Persona" Foreground="#93999D"/>
                                             <LineBreak/>
-                                            <Run Text="{Binding Name}"/>
+                                            <Run Text="{Binding Name}" FontSize="18" FontWeight="Bold"/>
+                                        </TextBlock>
+                                        <TextBlock Margin="0, 0, 0, 10">
+                                            <Run Text="Real Name" Foreground="#93999D"/>
+                                            <LineBreak/>
+                                            <Run Text="{Binding RealName}" FontSize="18" FontWeight="Bold" Foreground="Purple"/>
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsNotPrivateAndHasName}" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>                                        
+                                        <TextBlock Margin="0, 0, 0, 0">
+                                            <Run Text="VAC Bans" Foreground="#93999D"/>
                                         </TextBlock>
 
+                                        <TextBlock Margin="0,0,0,10">
+                                        <Run Text="{Binding VACBanCount}" FontSize="18" FontWeight="Bold" />
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasVACBan}" Value="True">
+                                                            <Setter Property="Foreground" Value="Red"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding HasVACBan}" Value="False">
+                                                            <Setter Property="Foreground" Value="Green"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Margin="0, 0, 0, 10" Visibility="{Binding HasVACBan, Converter={StaticResource BoolToVis}}">
+                                            <Run Text="Last Ban" Foreground="#93999D"/>
+                                            <LineBreak/>
+                                            <Run Text="{Binding LastBanDate, Mode=OneWay}" FontSize="18" FontWeight="Bold" Foreground="Red"/>
+                                        </TextBlock>
                                         <TextBlock Margin="0, 0, 0, 10">
                                             <Run Text="SteamID" Foreground="#93999D"/>
                                             <LineBreak/>
-                                            <Run Text="{Binding SteamID}"/>
+                                            <Run Text="{Binding SteamID}" FontSize="16" />
                                         </TextBlock>
 
+                                        <TextBlock Text="Is Profile Private?" Margin="0,0,0,0" Foreground="#93999D" />
+                                        <metro:ToggleSwitch IsEnabled="False" IsChecked="{Binding IsSteamProfilePrivate}" HorizontalAlignment="Left" OnLabel="YES" OffLabel="NO"/>
+                                                                                
                                     </StackPanel>
                                 </Grid>
                             </Grid>

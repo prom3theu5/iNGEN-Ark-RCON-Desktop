@@ -7,7 +7,8 @@
              xmlns:Metro="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
-             DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}">
+             DataContext="{Binding Scheduled, Source={StaticResource Locator}}"
+             >
     <controls:Section>
         <Grid>
             <Grid.RowDefinitions>
@@ -24,13 +25,13 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button x:Name="AddTaskBUtton" Click="AddTaskBUtton_Click" Height="30">
+                        <Button x:Name="AddTaskBUtton" Command="{Binding AddTaskCommand}" Height="30">
                             <StackPanel Orientation="Horizontal">
                                 <Image Height="25" Source="/iNGen;component/Resources/Images/confirm.png" />
                                 <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Add New Task</Label>
                             </StackPanel>
                         </Button>
-                        <Button Height="30" Margin="10,0,0,0" x:Name="DeleteTaskButton" Click="DeleteTaskButton_Click">
+                        <Button Height="30" Margin="10,0,0,0" x:Name="DeleteTaskButton" Command="{Binding DeleteTaskCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
                                 <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Delete Selected Task</Label>
@@ -42,7 +43,7 @@
 
             <!-- List View -->
             <Border Grid.Row="1" Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 0, 0, 1">
-                <ListView x:Name="ScheduledTaskListView" ItemsSource="{Binding ScheduledTasks.Tasks, Mode=TwoWay}">
+                <ListView x:Name="ScheduledTaskListView" ItemsSource="{Binding ScheduledTasks.Tasks}" SelectedItem="{Binding SelectedScheduledTask}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="Silver" BorderThickness="1">

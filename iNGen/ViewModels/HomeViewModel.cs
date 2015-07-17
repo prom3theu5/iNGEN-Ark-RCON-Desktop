@@ -5,71 +5,131 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
+using MahApps.Metro.Controls.Dialogs;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace iNGen.ViewModels
 {
-    public class HomeViewModel: Notifiable
+    public class HomeViewModel: ViewModelBase
     {
         public ServerModelSet ServerModelSet {get; set;}
         public bool AttemptReconnectOnServerConnectionFail {get; set;}
+        public string ApplicationLog { get; set; }
+        public Server SelectedServer { get; set; }
+
+        public RelayCommand DeleteSelectedServerCommand { get; set; }
+        public RelayCommand NewServerCommand { get; set; }
         public event EventHandler ApplicationLogUpdated;
 
         public HomeViewModel()
         {
             ServerModelSet = App.ModelManager.Get<ServerModelSet>();
-
             ApplicationLog = "";
-            App.ArkRcon.ServerConnectionStarting += (s, args) =>
-                {
-                    ((Server)args.ConnectionInfo).IsConnected = true;
-                    WriteToApplicationLog(args.Message, args.Timestamp);
-                };
-            App.ArkRcon.ServerConnectionSucceeded += (s, args) => 
-            { 
-                WriteToApplicationLog(args.Message, args.Timestamp); 
 
-                if (App.ModelManager.Get<UserSettings>().GeneralSettings.DoReconnectEveryFiveMinutes)
-                {
-                    WriteToApplicationLog("Auto Reconnect Every Five minutes is Enabled", args.Timestamp); 
-                    App.EventManager.Events.Add(new TimedEvent(5*1000*60, () =>
-                    {
-                        ForceReconnect(args.ConnectionInfo as Server);
-                    }, true));
-                }
-            };
-            App.ArkRcon.ServerConnectionDisconnected += (s, args) =>
-                {
-                    ((Server)args.ConnectionInfo).IsConnected = false;
-                    WriteToApplicationLog(args.Message, args.Timestamp);
-                };
-            App.ArkRcon.ServerConnectionFailed += (s, args) =>
-                {
-                    ((Server)args.ConnectionInfo).IsConnected = false;
-                    WriteToApplicationLog(args.Message, args.Timestamp);
+            #region Connection Related
 
-                    if(AttemptReconnectOnServerConnectionFail && App.ModelManager.Get<UserSettings>().GeneralSettings.IsAutoReconnectEnabled)
-                        InitiateReconnect(args.ConnectionInfo as Server);
-                };
-            App.ArkRcon.ServerConnectionDropped += (s, args) =>
-                {
-                    ((Server)args.ConnectionInfo).IsConnected = false;
-                    WriteToApplicationLog(args.Message, args.Timestamp);
-
-                    if(App.ModelManager.Get<UserSettings>().GeneralSettings.IsAutoReconnectEnabled)
-                    {
-                        InitiateReconnect(args.ConnectionInfo as Server);
-                        AttemptReconnectOnServerConnectionFail = true;
-                    }
-                };
+            App.ArkRcon.ServerConnectionStarting += ArkRcon_ServerConnectionStarting;
+            App.ArkRcon.ServerConnectionSucceeded += ArkRcon_ServerConnectionSucceeded;
+            App.ArkRcon.ServerConnectionDisconnected += ArkRcon_ServerConnectionDisconnected;
+            App.ArkRcon.ServerConnectionFailed += ArkRcon_ServerConnectionFailed;
+            App.ArkRcon.ServerConnectionDropped += ArkRcon_ServerConnectionDropped;
             App.ArkRcon.ServerAuthSucceeded += (s, args) => WriteToApplicationLog(args.Message, args.Timestamp);
             App.ArkRcon.ServerAuthFailed += (s, args) => WriteToApplicationLog(args.Message, args.Timestamp);
+
+            #endregion
+
+            Messenger.Default.Register<NotificationMessage<MessageDialogResult>>(this, OnDialogResult);
+            
+            DeleteSelectedServerCommand = new RelayCommand(DeleteServer);
+            NewServerCommand = new RelayCommand(NewServer);
         }
 
-        private string mApplicationLog;
-        public string ApplicationLog
+        #region Connection Methods
+
+        void ArkRcon_ServerConnectionDropped(object sender, Ark.ServerConnectionEventArgs e)
         {
-            get { return mApplicationLog; }
-            set { SetField(ref mApplicationLog, value); }
+            ((Server)e.ConnectionInfo).IsConnected = false;
+            WriteToApplicationLog(e.Message, e.Timestamp);
+
+            if (App.ModelManager.Get<UserSettings>().GeneralSettings.IsAutoReconnectEnabled)
+            {
+                InitiateReconnect(e.ConnectionInfo as Server);
+                AttemptReconnectOnServerConnectionFail = true;
+            }
+        }
+
+        void ArkRcon_ServerConnectionFailed(object sender, Ark.ServerConnectionEventArgs e)
+        {
+            ((Server)e.ConnectionInfo).IsConnected = false;
+            WriteToApplicationLog(e.Message, e.Timestamp);
+
+            if (AttemptReconnectOnServerConnectionFail && App.ModelManager.Get<UserSettings>().GeneralSettings.IsAutoReconnectEnabled)
+                InitiateReconnect(e.ConnectionInfo as Server);
+        }
+
+        void ArkRcon_ServerConnectionDisconnected(object sender, Ark.ServerConnectionEventArgs e)
+        {
+            ((Server)e.ConnectionInfo).IsConnected = false;
+            WriteToApplicationLog(e.Message, e.Timestamp);
+        }
+
+        void ArkRcon_ServerConnectionSucceeded(object sender, Ark.ServerConnectionEventArgs e)
+        {
+            WriteToApplicationLog(e.Message, e.Timestamp);
+
+            if (App.ModelManager.Get<UserSettings>().GeneralSettings.DoReconnectEveryFiveMinutes)
+            {
+                WriteToApplicationLog("Auto Reconnect Every Five minutes is Enabled", e.Timestamp);
+                ForceReconnect(e.ConnectionInfo as Server);
+            }
+        }
+
+        void ArkRcon_ServerConnectionStarting(object sender, Ark.ServerConnectionEventArgs e)
+        {
+            ((Server)e.ConnectionInfo).IsConnected = true;
+            WriteToApplicationLog(e.Message, e.Timestamp);
+        }
+
+        #endregion
+
+        private void DeleteServer()
+        {
+            //if (SelectedServer == null || SelectedServer.IsConnected)
+            //    return;
+            Messenger.Default.Send(new NotificationMessage<string>(string.Format("Confirm Deleting Server: {0}", SelectedServer.DisplayName), "ShowConfirmDeleteServerDialog"));
+        }
+
+
+        private void OnDialogResult(NotificationMessage<MessageDialogResult> result)
+        {
+            switch (result.Notification)
+            {
+                case "ConfirmDeleteServerDialogResult":
+                    if (SelectedServer == null) return;
+                    if (result.Content == MessageDialogResult.Negative) return;
+                    var server = SelectedServer;
+                    SelectedServer = null;
+                    ServerModelSet.DeleteServer(server);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void NewServer()
+        {
+            ServerModelSet.NewServer();
+            SelectedServer = ServerModelSet.Servers.Last();
+        }
+
+
+
+        public override void Cleanup()
+        {
+            base.Cleanup();
+            Messenger.Default.Unregister<NotificationMessage<MessageDialogResult>>(this);
         }
 
         private void WriteToApplicationLog(string message, DateTime timestamp)
@@ -82,22 +142,22 @@ namespace iNGen.ViewModels
         private void InitiateReconnect(Server server)
         {
             WriteToApplicationLog("Auto-Reconnecting in 10 seconds...", DateTime.Now);
-            App.EventManager.Events.Add(new TimedEvent(10000, () =>
-                {
-                    if(!App.ArkRcon.IsConnected)
-                    {
-                        App.ArkRcon.Connect(server);
-                    }
-                }, true));
+            if (!App.ArkRcon.IsConnected)
+            {
+                NormalReconnect(server);
+            }
         }
 
-        private void ForceReconnect(Server server)
+        private async void ForceReconnect(Server server)
         {
-            WriteToApplicationLog("Auto-Reconnecting in 3 seconds...", DateTime.Now);
-            App.EventManager.Events.Add(new TimedEvent(3000, () =>
-            {
-               App.ArkRcon.Connect(server);
-            }, true));
+            await Task.Delay(5 * 1000 * 60);
+            await App.ArkRcon.Connect(server);
+        }
+
+        private async void NormalReconnect(Server server)
+        {
+            await Task.Delay(10 * 1000);
+            await App.ArkRcon.Connect(server);
         }
     }
 }

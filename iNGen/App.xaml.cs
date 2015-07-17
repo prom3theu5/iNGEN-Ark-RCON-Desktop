@@ -21,6 +21,7 @@ namespace iNGen
         public static Rcon ArkRcon = new Rcon();
         public static LogManager LogManager = new LogManager();
         public static EventManager EventManager = new EventManager();
+        public static ViewModels.ViewModelLocator Locator { get; private set; }
         private TaskbarIcon tb;
 
         public App()
@@ -28,6 +29,7 @@ namespace iNGen
             InitializeComponent();
             tb = (TaskbarIcon)FindResource("iNGenTaskbarIcon");
             tb.TrayMouseDoubleClick += tb_TrayMouseDoubleClick;
+            Locator = new ViewModels.ViewModelLocator();
         }
 
         void tb_TrayMouseDoubleClick(object sender, RoutedEventArgs e)

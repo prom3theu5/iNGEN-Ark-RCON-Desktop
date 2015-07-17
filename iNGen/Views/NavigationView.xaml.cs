@@ -17,16 +17,12 @@ using System.Windows.Shapes;
 
 namespace iNGen.Views
 {
-    /// <summary>
-    /// Interaction logic for NavigationView.xaml
-    /// </summary>
     public partial class NavigationView : UserControl
     {
-        public NavigationViewModel ViewModel {get; set;}
+        public NavigationViewModel ViewModel { get { return this.DataContext as NavigationViewModel; } }
 
         public NavigationView()
         {
-            ViewModel = new NavigationViewModel();
             InitializeComponent();
         }
     }

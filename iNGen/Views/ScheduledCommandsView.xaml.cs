@@ -17,61 +17,17 @@ using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.Controls;
 using System.Diagnostics;
 using iNGen.Models;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace iNGen.Views
 {
     public partial class ScheduledCommandsView : UserControl
     {
-        public ScheduledCommandsViewModel ViewModel { get; set; }
-        private MetroWindow View;
-
+        public ScheduledCommandsViewModel ViewModel { get { return DataContext as ScheduledCommandsViewModel; } }
+        
         public ScheduledCommandsView()
         {
-            ViewModel = new ScheduledCommandsViewModel();
             InitializeComponent();
-            Loaded += ScheduledCommandsView_Loaded;
-        }
-
-        void ScheduledCommandsView_Loaded(object sender, RoutedEventArgs e)
-        {
-            View = App.Current.MainWindow as MainWindow;
-        }
-
-        private async void DeleteTaskButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ScheduledTaskListView.SelectedIndex == -1)
-            {
-                await ShowMessageDialog("You must select an item to remove from the Tasks List");
-                return;
-            }
-            ViewModel.ScheduledTasks.Tasks.RemoveAt(ScheduledTaskListView.SelectedIndex);
-        }
-
-        private void AddTaskBUtton_Click(object sender, RoutedEventArgs e)
-        {
-            var flyout = View.Flyouts.Items[0] as Flyout;
-            flyout.IsOpen = true;
-        }
-
-        private async Task<MessageDialogResult> ShowConfirmDialog(string dialogText)
-        {
-            View.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-            var mySettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "Yes",
-                NegativeButtonText = "No",
-            };
-            return await View.ShowMessageAsync("Question", dialogText, MessageDialogStyle.AffirmativeAndNegative, mySettings);
-        }
-
-        private async Task<MessageDialogResult> ShowMessageDialog(string dialogText)
-        {
-            View.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-            var mySettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "OK",
-            };
-            return await View.ShowMessageAsync("Information", dialogText, MessageDialogStyle.Affirmative, mySettings);
         }
 
         private void ToggleTask_Checked(object sender, RoutedEventArgs e)

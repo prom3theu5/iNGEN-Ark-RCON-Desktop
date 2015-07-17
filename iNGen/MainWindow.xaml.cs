@@ -1,63 +1,69 @@
 ﻿using iNGen.Models;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using PTK.Extensions;
 using System.IO;
 using MahApps.Metro.Controls;
 using Squirrel;
 using System.Xml.Linq;
-using System.Xml.Serialization;
-using iNGen.Views;
 using MahApps.Metro.Controls.Dialogs;
-using MahApps.Metro;
-using System.ComponentModel;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace iNGen
 {
     public partial class MainWindow : MetroWindow
     {
-        public GeneralSettings GeneralSettings { get; set; }
-        public List<TaskCommand> TaskList { get; set; }
-        
-        
         public MainWindow()
         {
-            GeneralSettings = App.ModelManager.Get<UserSettings>().GeneralSettings;
             InitializeComponent();
+            Messenger.Default.Register<NotificationMessage>(this, NotificationMessageReceived);
+            Messenger.Default.Register<NotificationMessage<string>>(this, NotificationStringRecieved);
             Loaded += MainWindow_Loaded;
-            TaskList = new List<TaskCommand>();
+            Closing += MainWindow_Closing;
+        }
+
+        void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Messenger.Default.Unregister<NotificationMessage>(this);
+            Messenger.Default.Unregister<NotificationMessage<string>>(this);
+        }
+
+        private async void NotificationStringRecieved(NotificationMessage<string> message)
+        {
+            switch (message.Notification)
+            {
+                case "ShowMessageDialog":
+                    await ShowMessageDialog(message.Content);
+                    break;
+                case "ShowConfirmDeleteServerDialog":
+                    var result = await ShowConfirmDialog(message.Content);
+                    Messenger.Default.Send(new NotificationMessage<MessageDialogResult>(result, "ConfirmDeleteServerDialogResult"));
+                    break;
+                default:
+                    return;
+            }
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            CommandTypeCombo.ItemsSource = Enum.GetValues(typeof(CommandType)).Cast<Enum>().Select(value => new
-        {
-            (Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(DescriptionAttribute)) as DescriptionAttribute).Description,
-            value
-        })
-        .OrderBy(item => item.value)
-        .Select(item => new TaskCommands
-        {
-            Description = item.Description,
-            value = item.value
-        })
-        .ToList();
             CheckForUpdates();
             StartUpdateTimer();
+        }
+
+        private void NotificationMessageReceived(NotificationMessage message)
+        {
+            switch (message.Notification)
+            {
+                case "ShowAboutWindow":
+                    ShowAboutWindow();
+                    break;
+                default:
+                    return;
+            }
         }
 
         private void StartUpdateTimer()
@@ -90,7 +96,7 @@ namespace iNGen
                         {
                             XElement xelement = XElement.Load("http://arkmanager.teamitf.co.uk/iNGen/version.xml");
                             StringReader reader = new StringReader(xelement.ToString());
-                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Models.AppUpdates));
+                            System.Xml.Serialization.XmlSerializer xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(Models.AppUpdates));
                             Models.AppUpdates appUpdates = (Models.AppUpdates)xmlSerializer.Deserialize(reader);
                             string changes = MakeChangeLog(appUpdates);
                             if (updateInfo.CurrentlyInstalledVersion.Version == updateInfo.FutureReleaseEntry.Version) return;
@@ -179,73 +185,6 @@ namespace iNGen
             }
         }
 
-        private void CancelAddNewTask_Click(object sender, RoutedEventArgs e)
-        {
-            var flyout = this.Flyouts.Items[0] as Flyout;
-            flyout.IsOpen = false;
-            TaskCommandList.ItemsSource = null;
-            TaskList.Clear();
-            TaskNameBox.Text = "";
-            TaskRepeatableCheckbox.IsChecked = false;
-            TaskIntervalBox.Text = "1";
-
-        }
-
-        private async void ConfirmAddNewTask_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(TaskNameBox.Text))
-            {
-                await ShowMessageDialog("Please enter a Task Name!");
-                return;
-            }
-            var scheduledTask = NavigationViewObject.ViewModel.NavigationItems.FirstOrDefault(a => a.Header == "Scheduled Tasks");
-            if (scheduledTask == null) CancelAddNewTask_Click(sender, e);
-            var item = scheduledTask.Content as ScheduledCommandsView;
-            int output;
-            var result = int.TryParse(TaskIntervalBox.Text, out output);
-            string units;
-            switch(TaskIntervalPeriodVariable.SelectedIndex)
-            {
-                case 0:
-                    units = "Second(s)";
-                    break;
-                case 1:
-                    output = output * 60;
-                    units = "Minute(s)";
-                    break;
-                case 2:
-                    output = output * 3600;
-                    units = "Hour(s)";
-                    break;
-                case 3:
-                    output = output * 86400;
-                    units = "Day(s)";
-                    break;
-                default:
-                    return;
-            }
-            if (result == false)
-            {
-                await ShowMessageDialog("Repeat Interval must be a whole number (integer).");
-                return;
-            }
-            var task = new ScheduledTask
-            {
-                TaskName = TaskNameBox.Text,
-                IsRepeat = (bool)TaskRepeatableCheckbox.IsChecked,
-                RepeatInterval = output,
-                IntervalUnit = units,
-                IsEnabled = (bool)TaskEnabledCheckbox.IsChecked
-            };
-            task.TaskCommands = new List<TaskCommand>();
-            foreach (TaskCommand command in TaskList)
-            {
-                task.TaskCommands.Add(command);
-            }
-            item.ViewModel.ScheduledTasks.Tasks.Add(task);
-            CancelAddNewTask_Click(sender, e);
-        }
-
         private async Task<MessageDialogResult> ShowMessageDialog(string dialogText)
         {
             this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
@@ -272,7 +211,7 @@ namespace iNGen
             this.Topmost = App.ModelManager.Get<UserSettings>().GeneralSettings.KeepWindowTopmost;
         }
 
-        private async void ShowAboutApp_Click(object sender, RoutedEventArgs e)
+        private async void ShowAboutWindow()
         {
             using (var mgr = new UpdateManager("http://arkmanager.teamitf.co.uk/iNGen/Releases/", "iNGen"))
             {
@@ -285,7 +224,7 @@ namespace iNGen
                         {
                             XElement xelement = XElement.Load("http://arkmanager.teamitf.co.uk/iNGen/version.xml");
                             StringReader reader = new StringReader(xelement.ToString());
-                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Models.AppUpdates));
+                            System.Xml.Serialization.XmlSerializer xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(Models.AppUpdates));
                             Models.AppUpdates appUpdates = (Models.AppUpdates)xmlSerializer.Deserialize(reader);
                             string changes = MakeChangeLog(appUpdates);
                             var updateDialog = new Views.AboutApp(updateInfo, changes) { Owner = this };
@@ -300,19 +239,7 @@ namespace iNGen
             }
         }
 
-        private void DeleteTaskCommand_Click(object sender, RoutedEventArgs e)
-        {
-            if (TaskCommandList.SelectedIndex == -1) return;
-            var index = TaskCommandList.SelectedIndex;
-            TaskCommandList.ItemsSource = null;
-            TaskList.RemoveAt(index);
-            TaskCommandList.ItemsSource = TaskList;
-        }
-
-        private void AddTaskCommand_Click(object sender, RoutedEventArgs e)
-        {
-            AddTaskCommandWindow.IsOpen = true;
-        }
+       
 
         private void CommandTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -347,73 +274,16 @@ namespace iNGen
             }
         }
 
-        private async void ConfirmAddTaskCommand_Click(object sender, RoutedEventArgs e)
+        private async Task<MessageDialogResult> ShowConfirmDialog(string dialogText)
         {
-            if (CommandTypeCombo.SelectedIndex == -1) return;
-            TaskCommandList.ItemsSource = null;
-            var item = CommandTypeCombo.SelectedItem as TaskCommands;
-            TaskCommand command = new TaskCommand();
-            command.CommandType = (CommandType)item.value;
-            switch(CommandTypeCombo.SelectedIndex)
+            MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            var mySettings = new MetroDialogSettings()
             {
-                case 0:
-                    if (string.IsNullOrWhiteSpace(NewTaskDelayVariable.Text)) return;
-                    int output;
-                    bool result = int.TryParse(NewTaskDelayVariable.Text, out output);
-                    if (!result)
-                    {
-                        await ShowMessageDialog("You must enter a whole number (Integer");
-                        return;
-                    }
-                    switch (NewTaskDelayPeriodVariable.SelectedIndex)
-                    {
-                        case 0:
-                            command.ExtraInfo = "Seconds";
-                            break;
-                        case 1:
-                            output = output * 60;
-                            command.ExtraInfo = "Minutes";
-                            break;
-                        case 2:
-                            output = output * 3600;
-                            command.ExtraInfo = "Hours";
-                            break;
-                        case 3:
-                            output = output * 86400;
-                            command.ExtraInfo = "Days";
-                            break;
-                        default:
-                            return;
-                    }
-                    command.Variable = output.ToString();
-                    break;
-                case 1:
-                    if (string.IsNullOrWhiteSpace(NewTaskBroadcastVariable.Text)) return;
-                    command.Variable = NewTaskBroadcastVariable.Text;
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    if (string.IsNullOrWhiteSpace(NewTaskCustomVariable.Text)) return;
-                    command.Variable = NewTaskCustomVariable.Text;
-                    break;
-                default:
-                    return;
-            }
-            TaskList.Add(command);
-            TaskCommandList.ItemsSource = TaskList;
-            CancelAddTaskCommand_Click(sender, e);
+                AffirmativeButtonText = "Yes",
+                NegativeButtonText = "No",
+            };
+            return await this.ShowMessageAsync("Question", dialogText, MessageDialogStyle.AffirmativeAndNegative, mySettings);
         }
 
-        private void CancelAddTaskCommand_Click(object sender, RoutedEventArgs e)
-        {
-            CommandTypeCombo.SelectedIndex = -1;
-            NewTaskDelayPeriodVariable.SelectedIndex = 0;
-            AddTaskCommandWindow.IsOpen = false;
-        }
     }
 }

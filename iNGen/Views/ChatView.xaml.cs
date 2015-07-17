@@ -84,7 +84,7 @@ namespace iNGen.Views
                     EnableChatBUtton.IsEnabled = false;
                     DisableChatBUtton.IsEnabled = true;
                     _cancellationToken = new CancellationTokenSource();
-                    _getChatMessagesTask = Repeat.Interval(TimeSpan.FromMilliseconds(500), () => GetChatMessagesTask(), _cancellationToken.Token, true);
+                    _getChatMessagesTask = Repeat.Interval(TimeSpan.FromSeconds(3), () => GetChatMessagesTask(), _cancellationToken.Token, true);
                 }
             };
 
@@ -93,6 +93,7 @@ namespace iNGen.Views
                     DisableChatBUtton.IsEnabled = false;
                     EnableChatBUtton.IsEnabled = true;
                     if (_cancellationToken != null) _cancellationToken.Cancel();
+                    _getChatMessagesTask.Wait();
                 };
         }
 
