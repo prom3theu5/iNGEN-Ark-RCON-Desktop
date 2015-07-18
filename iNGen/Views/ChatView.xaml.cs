@@ -93,7 +93,8 @@ namespace iNGen.Views
                     DisableChatBUtton.IsEnabled = false;
                     EnableChatBUtton.IsEnabled = true;
                     if (_cancellationToken != null) _cancellationToken.Cancel();
-                    _getChatMessagesTask.Wait();
+                    if (_getChatMessagesTask != null)
+                        _getChatMessagesTask.Wait();
                 };
         }
 
