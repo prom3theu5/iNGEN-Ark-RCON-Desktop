@@ -12,20 +12,26 @@ using System.Threading;
 using PTK.Utils;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using iNGen.Views;
 
 namespace iNGen.ViewModels.ChatViewModels
 {
     public class ChatViewModel: ViewModelBase
     {
         public ChatSettings ChatSettings {get; set;}
+        public ChatView View { get; set; }
         public ObservableCollection<ChatMessage> ChatMessages { get; set; }
         public bool EnableChat { get; set; }
         public bool DisableChat { get; set; }
+        public int NewMessageLength { get { return NewMessage.Length; } }
         private Task _getChatMessagesTask;
         private CancellationTokenSource _cancellationToken;
         public RelayCommand ClearChatCommand { get; set; }
         public RelayCommand EnableChatCommand { get; set; }
         public RelayCommand DisableChatCommand { get; set; }
+        public RelayCommand NewMessageFocusChangeCommand { get; set; }
+
+        public RelayCommand NewMessageEnterKeyCommand { get; set; }
         public string NewMessage { get; set; }
         private MessageSide curside;
 
@@ -35,6 +41,7 @@ namespace iNGen.ViewModels.ChatViewModels
             ChatMessages = new ObservableCollection<ChatMessage>();
             EnableChat = true;
             DisableChat = false;
+            NewMessage = string.Empty;
 
             #region Rcon Events
             App.ArkRcon.ChatLogUpdated += (s, args) =>
@@ -62,8 +69,30 @@ namespace iNGen.ViewModels.ChatViewModels
             ClearChatCommand = new RelayCommand(ClearChat);
             EnableChatCommand = new RelayCommand(DoEnableChat);
             DisableChatCommand = new RelayCommand(DoDisableChat);
+            NewMessageEnterKeyCommand = new RelayCommand(NewMessageEnterKeyPress);
+            NewMessageFocusChangeCommand = new RelayCommand(NewMessageFocusChange);
+        }
 
-            Messenger.Default.Register<NotificationMessage>(this, OnSendMessage);
+        private void NewMessageFocusChange()
+        {
+            if (ChatSettings.IsAutoScrollEnabled)
+                View.ScrollConversationToEnd();
+        }
+
+        private void NewMessageEnterKeyPress()
+        {
+            if (string.IsNullOrWhiteSpace(NewMessage)) return;
+            if (ChatSettings.IsCustomServerConsoleNameEnabled)
+                App.ArkRcon.Say(NewMessage, ChatSettings.CustomServerConsoleName);
+            else
+                App.ArkRcon.Say(NewMessage, null);
+
+            NewMessage = string.Empty;
+            if (ChatSettings.IsAutoScrollEnabled)
+            {
+                View.ScrollConversationToEnd();
+            }
+            View.TextInput.Focus();
         }
 
         private void DoDisableChat()
@@ -81,29 +110,6 @@ namespace iNGen.ViewModels.ChatViewModels
             DisableChat = true;
             _cancellationToken = new CancellationTokenSource();
             _getChatMessagesTask = Repeat.Interval(TimeSpan.FromSeconds(3), () => GetChatMessagesTask(), _cancellationToken.Token, true);
-        }
-
-        public override void Cleanup()
-        {
-            base.Cleanup();
-            Messenger.Default.Unregister<NotificationMessage>(this);
-        }
-
-        private void OnSendMessage(NotificationMessage message)
-        {
-            switch (message.Notification)
-            {
-                case "SendAChatMessage":
-                    if (string.IsNullOrWhiteSpace(NewMessage)) return;
-                    if (ChatSettings.IsCustomServerConsoleNameEnabled)
-                       App.ArkRcon.Say(NewMessage, ChatSettings.CustomServerConsoleName);
-                    else
-                       App.ArkRcon.Say(NewMessage, null);
-                    Messenger.Default.Send(new NotificationMessage("SentNewMessage"));
-                    break;
-                default:
-                    return;
-            }
         }
 
         private void ClearChat()
@@ -130,6 +136,10 @@ namespace iNGen.ViewModels.ChatViewModels
                 message.Timestamp = args.Timestamp;
             ChatMessages.Add(message);
             curside = MessageSide.Me;
+            if (ChatSettings.IsAutoScrollEnabled)
+            {
+                View.ScrollConversationToEnd();
+            }
         }
 
         private void addTextRecieved(ChatLogEventArgs args)
@@ -145,7 +155,10 @@ namespace iNGen.ViewModels.ChatViewModels
 
             ChatMessages.Add(message);
             curside = MessageSide.You;
-            Messenger.Default.Send(new NotificationMessage("ScrollChatToEnd"));
+            if (ChatSettings.IsAutoScrollEnabled)
+            {
+                View.ScrollConversationToEnd();
+            }
         }
 
         

@@ -41,23 +41,20 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Rectangle Fill="LightGreen"
-                           Grid.RowSpan="3" Grid.Row="0"/>
+                           Grid.RowSpan="2" Grid.Row="0"/>
                 <TextBlock Style="{StaticResource MessageSent}" Grid.Row="1">
                     <Run Text="{Binding SenderName}" Foreground="Purple" FontStyle="Normal" FontWeight="Bold"></Run>
-                    <LineBreak/>
+                    <Run Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}" Foreground="Green" FontSize="12"
+                    /><LineBreak/>
                     <Run Text="{Binding Text}" Foreground="Black"></Run>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}"
-                             Style="{StaticResource TimestampStyle}"
-                             Grid.Row="2"/>
                 <Path Data="m 0,0 l 16,0 l 0,16 l -16,-16"
                     Fill="LightGreen"
                     Margin="0,-1,5,0"           
                     HorizontalAlignment="Right"
-                    Grid.Row="3"/>
+                    Grid.Row="2"/>
             </Grid>            
         </DataTemplate>
         
@@ -67,22 +64,19 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Path Data="m 0,0 l 0,16 l 16,0 l -16,-16"
                         Fill="White"
                         Margin="5,0,0,-1"
                         HorizontalAlignment="Left" Grid.Row="0"/>
                 <Rectangle Fill="White"
-                             Grid.Row="1" Grid.RowSpan="3"/>
+                             Grid.Row="1" Grid.RowSpan="2"/>
                 <TextBlock Style="{StaticResource MessageRecieved}" Grid.Row="2">
                     <Run Text="{Binding SenderName}" Foreground="Purple" FontStyle="Normal" FontWeight="Bold"></Run>
-                    <LineBreak/>
+                    <Run Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}" Foreground="Green" FontSize="12"
+                    /><LineBreak/>
                     <Run Text="{Binding Text}" Foreground="Black"></Run>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}"
-                             Style="{StaticResource TimestampStyle}"
-                             Grid.Row="3"/>
             </Grid>
         </DataTemplate>
         
@@ -92,23 +86,19 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Path Data="m 0,0 l 0,16 l 16,0 l -16,-16"
                         Fill="White"
                         Margin="5,0,0,-1"
                         HorizontalAlignment="Left" Grid.Row="0"/>
                 <Rectangle Fill="White"
-                             Grid.Row="1" Grid.RowSpan="3"/>
+                             Grid.Row="1" Grid.RowSpan="2"/>
                 <TextBlock Style="{StaticResource MessageRecieved}" Grid.Row="2">
                     <Run Text="{Binding SenderName}" Foreground="Purple" FontStyle="Normal" FontWeight="Bold"></Run>
-                    <LineBreak/>
+                    <Run Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}" Foreground="Green" FontSize="12"
+                    /><LineBreak/>
                     <Run Text="{Binding Text}" Foreground="Black"></Run>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}"
-                            Style="{StaticResource TimestampStyle}"
-                            Grid.Row="3"
-                             />
             </Grid>
         </DataTemplate>
         
@@ -118,23 +108,20 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Rectangle Fill="LightGreen"
-                           Grid.RowSpan="3" Grid.Row="0"/>
+                           Grid.RowSpan="2" Grid.Row="0"/>
                 <TextBlock Style="{StaticResource MessageSent}" Grid.Row="1">
                     <Run Text="{Binding SenderName}" Foreground="Purple" FontStyle="Normal" FontWeight="Bold"></Run>
-                    <LineBreak/>
+                    <Run Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}" Foreground="Green" FontSize="12"
+                    /><LineBreak/>
                     <Run Text="{Binding Text}" Foreground="Black"></Run>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=Timestamp, Converter={StaticResource StringFormatConverter}, ConverterParameter='ddd, HH:mm'}"
-                             Style="{StaticResource TimestampStyle}"
-                             Grid.Row="2"/>
                 <Path Data="m 0,0 l 16,0 l 0,16 l -16,-16"
                     Fill="LightGreen"
                     Margin="0,-1,5,0"           
                     HorizontalAlignment="Right"
-                    Grid.Row="3"/>
+                    Grid.Row="2"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>

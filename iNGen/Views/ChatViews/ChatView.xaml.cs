@@ -55,6 +55,7 @@ namespace iNGen.Views
         public ChatView()
         {
             InitializeComponent();
+
             scrollViewerScrollToEndAnim = new DoubleAnimation()
             {
                 Duration = TimeSpan.FromSeconds(1),
@@ -63,65 +64,16 @@ namespace iNGen.Views
             Storyboard.SetTarget(scrollViewerScrollToEndAnim, this);
             Storyboard.SetTargetProperty(scrollViewerScrollToEndAnim, new PropertyPath(VerticalOffsetProperty));
             scrollViewerStoryboard = new Storyboard();
+
             scrollViewerStoryboard.Children.Add(scrollViewerScrollToEndAnim);
-            Messenger.Default.Register<NotificationMessage>(this, OnNewNotification);
-            Unloaded += ChatView_Unloaded;
+            ViewModel.View = this;
         }
 
-        void ChatView_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Messenger.Default.Unregister<NotificationMessage>(this);
-        }
-
-        private void OnNewNotification(NotificationMessage notification)
-        {
-            switch (notification.Notification)
-            {
-                case "SentNewMessage":
-                    if (ViewModel.ChatSettings.IsAutoScrollEnabled)
-                    {
-                        ScrollConversationToEnd();
-                    }
-                    TextInput.Text = "";
-                    TextInput.Focus();
-                    break;
-                case "ScrollChatToEnd":
-                    if (ViewModel.ChatSettings.IsAutoScrollEnabled)
-                    {
-                        ScrollConversationToEnd();
-                    }
-                    break;
-                default:
-                    return;
-            }
-        }
-
-        private void TextInput_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.ChatSettings.IsAutoScrollEnabled)
-                ScrollConversationToEnd();
-        }
-
-        private void ScrollConversationToEnd()
+        public void ScrollConversationToEnd()
         {
             scrollViewerScrollToEndAnim.From = ConversationScrollViewer.VerticalOffset;
             scrollViewerScrollToEndAnim.To = ConversationContentContainer.ActualHeight;
             scrollViewerStoryboard.Begin();
-        }
-
-        private void TextInput_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.ChatSettings.IsAutoScrollEnabled)
-                ScrollConversationToEnd();
-        }
-
-        private void TextInput_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                Messenger.Default.Send(new NotificationMessage("SendAChatMessage"));
-                e.Handled = true;
-            }
         }
 
     }
