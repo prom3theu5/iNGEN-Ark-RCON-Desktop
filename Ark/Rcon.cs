@@ -34,7 +34,8 @@ namespace Ark
         public event EventHandler<HostnameEventArgs> HostnameUpdated;
         public event EventHandler<PlayerCountEventArgs> CurrentPlayerCountUpdated;
         public event EventHandler<ConsoleLogEventArgs> ConsoleLogUpdated;
-        public event EventHandler<ChatLogEventArgs> ChatLogUpdated;        
+        public event EventHandler<ChatLogEventArgs> ChatLogUpdated;
+        public event EventHandler<ChatLogEventArgs> SentMessageUpdated; 
         public event EventHandler<PlayersEventArgs> PlayersUpdated;
         public event EventHandler<ServerAuthEventArgs> ServerAuthFailed;
         public event EventHandler<ServerAuthEventArgs> ServerAuthSucceeded;
@@ -308,28 +309,43 @@ namespace Ark
         {
             var message = packet.DataAsString();
             if (message.Trim() == "Server received, But no response!!") return;
-
             if (packet.Opcode == Opcode.ChatMessage)
             {
-                if (ChatLogUpdated != null)
+                string[] messages = message.Split('\n');
+                foreach (string newMessage in messages)
+                {
+                    if (string.IsNullOrWhiteSpace(newMessage)) continue;
+                    string[] splitMessage = newMessage.Split(new char[] { ':' }, 2);
+
                     if (message.StartsWith("SERVER:"))
                     {
-                        ChatLogUpdated(this, new ChatLogEventArgs()
+                       var adminMessage = splitMessage[1].Split(new char[] { ':' }, 2);
+                        if (SentMessageUpdated != null)
                         {
-                            Message = message,
-                            Timestamp = packet.Timestamp,
-                            IsAdmin = true
-                        });
+                            var chatLog = new ChatLogEventArgs()
+                            {
+                                Timestamp = packet.Timestamp,
+                                IsAdmin = true
+                            };
+                            chatLog.Message = adminMessage.Count() > 1 ? adminMessage[1] : adminMessage[0];
+                            SentMessageUpdated(this, chatLog);
+                        }
                     }
                     else
                     {
-                        ChatLogUpdated(this, new ChatLogEventArgs()
+                        if (ChatLogUpdated != null)
                         {
-                            Message = message,
-                            Timestamp = packet.Timestamp,
-                            IsAdmin = false
-                        });
+                            var chatLog = new ChatLogEventArgs()
+                            {
+                                Message = splitMessage[1],
+                                Sender = splitMessage[0],
+                                Timestamp = packet.Timestamp,
+                                IsAdmin = false
+                            };
+                            ChatLogUpdated(this, chatLog);
+                        }
                     }
+                }
                     
             }
         }

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
+using iNGen.ViewModels.ChatViewModels;
 using Microsoft.Practices.ServiceLocation;
 
 namespace iNGen.ViewModels
@@ -10,6 +11,7 @@ namespace iNGen.ViewModels
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
             SimpleIoc.Default.Register<NavigationViewModel>();
             SimpleIoc.Default.Register <ScheduledCommandsViewModel>();
+            SimpleIoc.Default.Register<ChatViewModel>();
             SimpleIoc.Default.Register<HomeViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();            
         }
@@ -17,6 +19,15 @@ namespace iNGen.ViewModels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
+
+
+        public ChatViewModel Chat
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<ChatViewModel>();
+            }
+        }
 
         public MainViewModel Main
         {

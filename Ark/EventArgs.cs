@@ -36,6 +36,7 @@ namespace Ark
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
         public bool IsAdmin { get; set; }
+        public string Sender { get; set; }
     }
 
     public class PlayersEventArgs: EventArgs
