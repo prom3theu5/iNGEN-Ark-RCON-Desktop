@@ -13,6 +13,7 @@ using PTK.Utils;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using iNGen.Views;
+using iNGen.Helpers;
 
 namespace iNGen.ViewModels.ChatViewModels
 {
@@ -20,7 +21,7 @@ namespace iNGen.ViewModels.ChatViewModels
     {
         public ChatSettings ChatSettings {get; set;}
         public ChatView View { get; set; }
-        public ObservableCollection<ChatMessage> ChatMessages { get; set; }
+        public FixedSizeObservableCollection<ChatMessage> ChatMessages { get; set; }
         public bool EnableChat { get; set; }
         public bool DisableChat { get; set; }
         public int NewMessageLength { get { return NewMessage.Length; } }
@@ -38,7 +39,7 @@ namespace iNGen.ViewModels.ChatViewModels
         public ChatViewModel()
         {
             ChatSettings = App.ModelManager.Get<UserSettings>().ChatSettings;
-            ChatMessages = new ObservableCollection<ChatMessage>();
+            ChatMessages = new FixedSizeObservableCollection<ChatMessage>(30);
             EnableChat = true;
             DisableChat = false;
             NewMessage = string.Empty;

@@ -19,7 +19,7 @@ namespace Ark
         private TcpClient TcpClient {get; set;}
         private NetworkStream TcpClientStream {get; set;}
         private Queue<Packet> OutgoingPackets {get; set;}
-        private Keepalive Keepalive {get; set;}
+        //private Keepalive Keepalive {get; set;}
         private bool CanSendPacket
         {
             get
@@ -40,7 +40,7 @@ namespace Ark
         public Client()
         {
             OutgoingPackets = new Queue<Packet>();
-            Keepalive = new Keepalive(this);
+            //Keepalive = new Keepalive(this);
             OutgoingPacketCooldown = new Stopwatch();
             OutgoingPacketCooldown.Restart();
             IncomingPacketReceieved = true;
@@ -82,7 +82,7 @@ namespace Ark
                 if(ServerConnectionSucceeded != null)
                     ServerConnectionSucceeded(this, new ServerConnectionEventArgs{Message = "Successfully connected.", Status = ServerConnectionStatus.Connected, Timestamp = DateTime.Now});
 
-                Keepalive.Reset();
+                //Keepalive.Reset();
                 return true;
             }
             else return false;
@@ -99,7 +99,7 @@ namespace Ark
             if(IsConnected)
             {
                 await ProcessPacketStream();
-                Keepalive.Update();
+                //Keepalive.Update();
             }
         }
 
@@ -126,8 +126,8 @@ namespace Ark
                         IncomingPacketReceieved = false;
                     }
 
-                    // We've successfully sent or recieved data so the keepalive can be pushed back.
-                    Keepalive.Reset();
+                    //// We've successfully sent or recieved data so the keepalive can be pushed back.
+                    //Keepalive.Reset();
                 }
             }
             catch

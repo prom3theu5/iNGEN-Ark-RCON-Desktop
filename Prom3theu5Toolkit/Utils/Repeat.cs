@@ -23,7 +23,7 @@ namespace PTK.Utils
                     if (!isRepeat)
                     {
                         await Task.Delay(pollInterval.Milliseconds);
-                        await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => action()));
+                        action();
                     }
                     else
                     {
@@ -31,7 +31,7 @@ namespace PTK.Utils
                         {
                             if (token.WaitCancellationRequested(pollInterval)) 
                                 break;
-                            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => action()));
+                            action();
                         }
                     }
                 }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);

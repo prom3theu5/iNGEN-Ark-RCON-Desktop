@@ -13,8 +13,8 @@ namespace Ark
     public enum Opcode
     {
         AuthFailed = -1,
-        ServerResponse = 0, // Generic message from server
-        Generic, // Generic message from server
+        ServerResponse = 0,
+        Generic, 
         Auth,
         Keepalive,
         GetPlayers,
