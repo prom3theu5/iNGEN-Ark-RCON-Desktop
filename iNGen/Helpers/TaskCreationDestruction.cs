@@ -26,39 +26,42 @@ namespace iNGen.Helpers
                task.TaskCancellationTokenSource = new CancellationTokenSource();
                task.ActualTask = Repeat.Interval(TimeSpan.FromSeconds(task.RepeatInterval), new Action(async () =>
                {
-                   if (App.ArkRcon.IsConnected)
+                   await App.Current.Dispatcher.BeginInvoke(new Action(async () =>
                    {
-                       foreach (TaskCommand command in task.TaskCommands)
+                       if (App.ArkRcon.IsConnected)
                        {
-                           switch (command.CommandType)
+                           foreach (TaskCommand command in task.TaskCommands)
                            {
-                               case CommandType.Delay:
-                                   bool result;
-                                   int output;
-                                   result = int.TryParse(command.Variable, out output);
-                                   await Task.Delay(output * 1000);
-                                   break;
-                               case CommandType.ListPlayers:
-                                   App.ArkRcon.ExecuteScheduledTask(task.TaskName, "listplayers");
-                                   break;
-                               case CommandType.Broadcast:
-                                   App.ArkRcon.ExecuteScheduledTask(task.TaskName, string.Format("broadcast {0}", command.Variable));
-                                   break;
-                               case CommandType.Shutdown:
-                                   App.ArkRcon.ExecuteScheduledTask(task.TaskName, "DoExit");
-                                   break;
-                               case CommandType.SaveWorld:
-                                   App.ArkRcon.ExecuteScheduledTask(task.TaskName, "SaveWorld");
-                                   break;
-                               case CommandType.Custom:
-                                   App.ArkRcon.ExecuteScheduledTask(task.TaskName, command.Variable);
-                                   break;
-                               default:
-                                   break;
+                               switch (command.CommandType)
+                               {
+                                   case CommandType.Delay:
+                                       bool result;
+                                       int output;
+                                       result = int.TryParse(command.Variable, out output);
+                                       await Task.Delay(output * 1000);
+                                       break;
+                                   case CommandType.ListPlayers:
+                                       App.ArkRcon.ExecuteScheduledTask(task.TaskName, "listplayers");
+                                       break;
+                                   case CommandType.Broadcast:
+                                       App.ArkRcon.ExecuteScheduledTask(task.TaskName, string.Format("broadcast {0}", command.Variable));
+                                       break;
+                                   case CommandType.Shutdown:
+                                       App.ArkRcon.ExecuteScheduledTask(task.TaskName, "DoExit");
+                                       break;
+                                   case CommandType.SaveWorld:
+                                       App.ArkRcon.ExecuteScheduledTask(task.TaskName, "SaveWorld");
+                                       break;
+                                   case CommandType.Custom:
+                                       App.ArkRcon.ExecuteScheduledTask(task.TaskName, command.Variable);
+                                       break;
+                                   default:
+                                       break;
+                               }
                            }
-                       }
 
-                   }
+                       }
+                   }));
                }), task.TaskCancellationTokenSource.Token, task.IsRepeat);
            }
        } 

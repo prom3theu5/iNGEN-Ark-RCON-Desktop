@@ -12,6 +12,8 @@ namespace iNGen.ViewModels
             SimpleIoc.Default.Register<NavigationViewModel>();
             SimpleIoc.Default.Register <ScheduledCommandsViewModel>();
             SimpleIoc.Default.Register<ChatViewModel>();
+            SimpleIoc.Default.Register<ConsoleViewModel>();
+            SimpleIoc.Default.Register<PlayersViewModel>();
             SimpleIoc.Default.Register<HomeViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();            
         }
@@ -21,6 +23,22 @@ namespace iNGen.ViewModels
             Justification = "This non-static member is needed for data binding purposes.")]
 
 
+        public ConsoleViewModel Console
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<ConsoleViewModel>();
+            }
+        }
+
+        public PlayersViewModel Players
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PlayersViewModel>();
+            }
+        }
+        
         public ChatViewModel Chat
         {
             get

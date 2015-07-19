@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:iNGen.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}">
+             DataContext="{Binding Console, Source={StaticResource Locator}}">
     <controls:Section>
         <Grid>
             <Grid.RowDefinitions>
@@ -26,7 +26,7 @@
                         <CheckBox Content="Auto Scroll" VerticalAlignment="Center" IsChecked="{Binding ConsoleSettings.IsAutoScrollEnabled, Mode=TwoWay}"/>
                         <CheckBox Content="Show Timestamps" Margin="20, 0, 0, 0"  VerticalAlignment="Center" IsChecked="{Binding ConsoleSettings.IsTimestampingEnabled, Mode=TwoWay}"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Click="ClearChatButtonClick" Height="30">
+                    <Button Grid.Column="1" Height="30" Command="{Binding ClearConsoleCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
                             <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Clear Console</Label>
@@ -38,13 +38,18 @@
             <!-- Chat Box -->
             <Border Grid.Row="1" Style="{DynamicResource SubSectionBorderStyle}" BorderThickness="0, 0, 0, 1">
                 <ScrollViewer x:Name="ChatScrollViewer">
-                    <RichTextBox x:Name="ChatTextBox" Padding="8, 8, 8, 8" IsUndoEnabled="False" IsManipulationEnabled="False" BorderThickness="0" Height="Auto"  VerticalAlignment="Bottom" IsReadOnly="True" IsReadOnlyCaretVisible="False" FontFamily="Consolas" FontSize="16">
-                        <RichTextBox.Resources>
-                            <Style TargetType="Paragraph">
-                                <Setter Property="Margin" Value="0"/>
-                            </Style>
-                        </RichTextBox.Resources>
-                    </RichTextBox>
+                <ItemsControl ItemsSource="{Binding ConsoleMessages}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=.}" TextWrapping="Wrap" Margin="5" FontSize="16" FontFamily="Consolas"></TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ScrollViewer>
             </Border>
             
@@ -55,7 +60,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock VerticalAlignment="Center" Text="SERVER CONSOLE: " Margin="10, 0, 0, 0" Foreground="#9E9E9E"/>
-                <TextBox Grid.Column="1" BorderThickness="0" Height="30" Margin="-2, 0, 0, 0"  KeyDown="ChatBoxKeyDown" AcceptsReturn="False" AcceptsTab="False"/>
+                <TextBox Grid.Column="1" BorderThickness="0" Height="30" Margin="-2, 0, 0, 0"  AcceptsReturn="False" AcceptsTab="False" Text="{Binding NewCommand, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding  Key="Enter" Command="{Binding ChatBoxKeyDown}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
             </Grid>
             
         </Grid>

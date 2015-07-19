@@ -20,66 +20,13 @@ namespace iNGen.Views
 {
     public partial class ConsoleView : UserControl
     {
-        public ConsoleViewModel ViewModel {get; set;}
+        public ConsoleViewModel ViewModel { get { return DataContext as ConsoleViewModel; } }
 
         public ConsoleView()
         {
-            ViewModel = new ConsoleViewModel();
             InitializeComponent();
-            App.ArkRcon.ConsoleLogUpdated += (s, args) =>
-            {
-                if (ViewModel.ConsoleSettings.IsAutoScrollEnabled)
-                    ChatScrollViewer.ScrollToBottom();
-            };
-
-            App.ArkRcon.ConsoleLogUpdated += (s, args) =>
-            {
-                string message = args.Message;
-                if (ViewModel.ConsoleSettings.IsTimestampingEnabled)
-                    message = args.Timestamp.ToString("(hh:mm tt) ") + message;
-                var run = new Run(message);
-                if (ViewModel.ConsoleSettings.IsNotificationsEnabled && ViewModel.ConsoleSettings.NotificationWords != null)
-                {
-                    foreach (var notificationWord in ViewModel.ConsoleSettings.NotificationWords)
-                    {
-                        if (message.Contains(notificationWord))
-                        {
-                            run.Foreground = new SolidColorBrush(Color.FromRgb(68, 138, 255));
-
-                            if (ViewModel.ConsoleSettings.IsFlashWindowNotificationEnabled)
-                            {
-                                Application.Current.MainWindow.FlashWindow();
-                            }
-                            break;
-                        }
-                    }
-                }
-                ChatTextBox.Document.Blocks.Add(new Paragraph(run));
-            };
-
+            ViewModel.View = this;
         }
 
-        private void ChatBoxKeyDown(object sender, KeyEventArgs e)
-        {
-            var textbox = sender as TextBox;
-
-            if(textbox != null)
-            {
-                if(e.Key == Key.Enter)
-                {
-                    if(ViewModel.ConsoleSettings.IsCustomServerConsoleNameEnabled)
-                        App.ArkRcon.ConsoleCommand(textbox.Text, ViewModel.ConsoleSettings.CustomServerConsoleName);
-                    else
-                        App.ArkRcon.ConsoleCommand(textbox.Text, null);
-
-                    textbox.Clear();
-                }
-            }
-        }
-
-        private void ClearChatButtonClick(object sender, RoutedEventArgs e)
-        {
-            ChatTextBox.Document.Blocks.Clear();
-        }
     }
 }

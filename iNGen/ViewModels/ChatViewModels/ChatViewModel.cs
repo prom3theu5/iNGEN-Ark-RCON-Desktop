@@ -118,9 +118,18 @@ namespace iNGen.ViewModels.ChatViewModels
             ChatMessages.Clear();
         }
 
-        private void GetChatMessagesTask()
+        //Craptastic fudged in Boolean "GotChatResponse" to see if the server is still responding to requests. They better fix this crap soon.....
+        private async void GetChatMessagesTask()
         {
+          await App.Current.Dispatcher.BeginInvoke(new Action(async ()=>{
             App.ArkRcon.ExecCommand(Ark.Opcode.ChatMessage, "getchat");
+            await Task.Delay(3000);
+            if (!App.ArkRcon.GotChatResponse)
+            {
+                App.ArkRcon.Disconnect();
+                await App.ArkRcon.Connect(App.Locator.Home.SelectedServer);
+            }
+          }));
         }
 
         private void addTextSend(ChatLogEventArgs args)

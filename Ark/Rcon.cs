@@ -14,14 +14,16 @@ namespace Ark
     {
         AuthFailed = -1,
         ServerResponse = 0,
-        Generic, 
+        Generic,
         Auth,
         Keepalive,
         GetPlayers,
         KickPlayer,
         BanPlayer,
         ScheduledTask,
-        ChatMessage
+        ChatMessage,
+        Whitelist,
+        UnWhitelist
     }
 
     public class Rcon
@@ -29,6 +31,7 @@ namespace Ark
         public ConnectionInfo CurrentServerInfo {get; set;}
         private Client Client {get; set;}
         public bool IsRunning {get; set;}
+        public bool GotChatResponse { get; set; }
 
         private Dictionary<PacketType, Dictionary<Opcode, Action<Packet>>> PacketHandlers {get; set;}
         public event EventHandler<HostnameEventArgs> HostnameUpdated;
@@ -56,6 +59,8 @@ namespace Ark
             PacketHandlers[PacketType.ResponseValue][Opcode.GetPlayers]         = OnGetPlayers;
             PacketHandlers[PacketType.ResponseValue][Opcode.ChatMessage]        = OnGetChatMessage;
             PacketHandlers[PacketType.ResponseValue][Opcode.KickPlayer]         = OnKickPlayer;
+            PacketHandlers[PacketType.ResponseValue][Opcode.Whitelist]          = OnWhitelistPlayer;
+            PacketHandlers[PacketType.ResponseValue][Opcode.UnWhitelist]        = OnUnWhitelistPlayer;
             PacketHandlers[PacketType.ResponseValue][Opcode.BanPlayer]          = OnBanPlayer;
             PacketHandlers[PacketType.ResponseValue][Opcode.ScheduledTask]      = OnScheduledTask;
             PacketHandlers[PacketType.ResponseValue][Opcode.Keepalive]          = (p) => Console.WriteLine("Keepalive");
@@ -134,6 +139,15 @@ namespace Ark
             return true;
         }
 
+        public bool ExecGetChat()
+        {
+            if (!IsConnected)
+            return false;
+            Client.SendPacket(new Packet(Opcode.ChatMessage, PacketType.ExecCommand, "getchat"));
+            GotChatResponse = false;
+            return true;
+        }
+
         public bool ExecCommand(string command, bool writeToConsole = false)
         {
             if(!ExecCommand(Opcode.Generic, command))
@@ -163,6 +177,13 @@ namespace Ark
                 return;
         }
 
+        public void SendPrivateMessage(string message, ulong steamID)
+        {
+            var formattedMessage = string.Format("serverchatto \"{0}\" PM From Admin: {1}", steamID.ToString(), message);
+            if (IsConnected)
+                ExecCommand(Opcode.ChatMessage, formattedMessage);
+        }
+
         public void ConsoleCommand(string message, string nickname)
         {
 
@@ -176,6 +197,7 @@ namespace Ark
 
         public void Echo(string message)
         {
+            if (IsConnected)
             ExecCommand("echo " + message);
         }
 
@@ -187,11 +209,25 @@ namespace Ark
 
         public void KickPlayer(ulong steamid)
         {
+            if (IsConnected)
             ExecCommand(Opcode.KickPlayer, "kickplayer " + steamid.ToString());
+        }
+
+        public void WhitelistPlayer(ulong steamid)
+        {
+            if (IsConnected)
+            ExecCommand(Opcode.Whitelist, "AllowPlayerToJoinNoCheck " + steamid.ToString());
+        }
+
+        public void UnWhitelistPlayer(ulong steamid)
+        {
+            if (IsConnected)
+            ExecCommand(Opcode.UnWhitelist, "DisallowPlayerToJoinNoCheck " + steamid.ToString());
         }
 
         public void BanPlayer(ulong steamid)
         {
+            if (IsConnected)
             ExecCommand(Opcode.BanPlayer, "banplayer " + steamid.ToString());
         }
 
@@ -308,9 +344,10 @@ namespace Ark
         private void OnGetChatMessage(Packet packet)
         {
             var message = packet.DataAsString();
-            if (message.Trim() == "Server received, But no response!!") return;
             if (packet.Opcode == Opcode.ChatMessage)
             {
+                GotChatResponse = true;
+                if (message.Trim() == "Server received, But no response!!") return;
                 string[] messages = message.Split('\n');
                 foreach (string newMessage in messages)
                 {
@@ -347,6 +384,38 @@ namespace Ark
                     }
                 }
                     
+            }
+        }
+
+        private void OnUnWhitelistPlayer(Packet packet)
+        {
+            var message = packet.DataAsString();
+            if (message.Trim() == "Server received, But no response!!") return;
+
+            if (packet.Opcode == Opcode.UnWhitelist)
+            {
+                if (ConsoleLogUpdated != null)
+                    ConsoleLogUpdated(this, new ConsoleLogEventArgs()
+                    {
+                        Message = "REMOVE PLAYER FROM WHITELIST COMMAND EXECUTED: " + message,
+                        Timestamp = packet.Timestamp
+                    });
+            }
+        }
+
+        private void OnWhitelistPlayer(Packet packet)
+        {
+            var message = packet.DataAsString();
+            if (message.Trim() == "Server received, But no response!!") return;
+
+            if (packet.Opcode == Opcode.Whitelist)
+            {
+                if (ConsoleLogUpdated != null)
+                    ConsoleLogUpdated(this, new ConsoleLogEventArgs()
+                    {
+                        Message = "PLAYER ADDED TO WHITELIST COMMAND EXECUTED: " + message,
+                        Timestamp = packet.Timestamp
+                    });
             }
         }
 
@@ -436,8 +505,6 @@ namespace Ark
                 Debug.WriteLine(ex.InnerException);
             }
         }
-        
-
         #endregion Rcon Handlers
 
     }
