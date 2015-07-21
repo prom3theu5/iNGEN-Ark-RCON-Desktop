@@ -32,6 +32,7 @@ namespace Ark
         private Client Client {get; set;}
         public bool IsRunning {get; set;}
         public bool GotChatResponse { get; set; }
+        private string LastSentAdminMessage;
 
         private Dictionary<PacketType, Dictionary<Opcode, Action<Packet>>> PacketHandlers {get; set;}
         public event EventHandler<HostnameEventArgs> HostnameUpdated;
@@ -176,6 +177,7 @@ namespace Ark
         {
 
             var formattedMessage = (nickname == null) ? message : "(" + nickname + "): " + message;
+            LastSentAdminMessage = formattedMessage;
             if(!ExecCommand(Opcode.ChatMessage, "serverchat " + formattedMessage))
                 return;
         }
@@ -357,9 +359,8 @@ namespace Ark
                     if (string.IsNullOrWhiteSpace(newMessage)) continue;
                     string[] splitMessage = newMessage.Split(new char[] { ':' }, 2);
 
-                    if (message.StartsWith("SERVER:"))
+                    if (newMessage.StartsWith("SERVER:") && newMessage == "SERVER: " + LastSentAdminMessage)
                     {
-                       var adminMessage = splitMessage[1].Split(new char[] { ':' }, 2);
                         if (SentMessageUpdated != null)
                         {
                             var chatLog = new ChatLogEventArgs()
@@ -367,7 +368,7 @@ namespace Ark
                                 Timestamp = packet.Timestamp,
                                 IsAdmin = true
                             };
-                            chatLog.Message = adminMessage.Count() > 1 ? adminMessage[1] : adminMessage[0];
+                            chatLog.Message = newMessage.Replace("SERVER: ", "");
                             SentMessageUpdated(this, chatLog);
                         }
                     }
