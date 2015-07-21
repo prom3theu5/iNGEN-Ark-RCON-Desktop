@@ -99,11 +99,14 @@ namespace Ark
 
         private void PurgeClient()
         {
-            CurrentServerInfo = null;
-            Client.Dispose();
-            Client = null;
-            HostnameUpdated(this, new HostnameEventArgs(){NewHostname = "", Timestamp = DateTime.Now});
-            CurrentPlayerCountUpdated(this, new PlayerCountEventArgs(){PlayerCount = 0});
+            if (CurrentServerInfo != null)
+                CurrentServerInfo = null;
+            if (Client != null)
+                Client.Dispose();
+            if (HostnameUpdated != null)
+                HostnameUpdated(this, new HostnameEventArgs(){NewHostname = "", Timestamp = DateTime.Now});
+            if (CurrentPlayerCountUpdated != null)
+                CurrentPlayerCountUpdated(this, new PlayerCountEventArgs(){PlayerCount = 0});
         }
 
         public async Task Run()
