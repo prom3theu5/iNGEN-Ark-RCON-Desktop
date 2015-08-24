@@ -29,19 +29,25 @@ namespace iNGen
         public App()
         {
             InitializeComponent();
+            Debug.WriteLine(GetErrorFile());
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             tb = (TaskbarIcon)FindResource("iNGenTaskbarIcon");
             tb.TrayMouseDoubleClick += tb_TrayMouseDoubleClick;
             Locator = new ViewModels.ViewModelLocator();
         }
 
+        private string GetErrorFile()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\iNGenError.txt";
+        }
+
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var filename = Path.Combine(GetApplicationDirectory(), "\\ApplicationError.txt");
+            
             var exception = e.ExceptionObject as Exception;
             if (exception == null) return;
             string errorMessage = $"An unhandled exception occurred: {exception.Message}";
-            using (var sw = new StreamWriter(filename, true))
+            using (var sw = new StreamWriter(GetErrorFile(), true))
             {
                 sw.WriteLine($"-----Application Exception Logged At: {DateTime.Now}-----");
                 sw.WriteLine("Application Error Message:");
@@ -52,14 +58,7 @@ namespace iNGen
                 sw.WriteLine("-----END OF ERROR-----");
                 sw.WriteLine(Environment.NewLine);
             }
-            MessageBox.Show("An Error Occurred. Please Report this on GitHub.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            Process.Start(filename);
-        }
-
-        private string GetApplicationDirectory()
-        {
-            var exePath = System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName;
-            return Path.GetDirectoryName(exePath);
+            MessageBox.Show("An Error Occurred. Please Report this on GitHub. There is a log on your desktop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         void tb_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
