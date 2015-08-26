@@ -18,6 +18,7 @@ namespace iNGen.Models
         private bool mAutoReconnect;
         private bool mReconnectEveryFiveMinutes;
         private bool mAutoStartChat;
+        private string mSteamAPIKey;
 
         [ProtoMember(1)]
         public bool StartOnWindows
@@ -66,6 +67,13 @@ namespace iNGen.Models
         {
             get { return mAutoStartChat; }
             set { SetField(ref mAutoStartChat, value); }
+        }
+
+        [ProtoMember(8)]
+        public string SteamApiKey
+        {
+            get { return mSteamAPIKey; }
+            set { SetField(ref mSteamAPIKey, value); }
         }
 
     }

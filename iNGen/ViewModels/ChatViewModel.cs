@@ -15,7 +15,7 @@ using GalaSoft.MvvmLight.Messaging;
 using iNGen.Views;
 using iNGen.Helpers;
 
-namespace iNGen.ViewModels.ChatViewModels
+namespace iNGen.ViewModels
 {
     public class ChatViewModel: ViewModelBase
     {

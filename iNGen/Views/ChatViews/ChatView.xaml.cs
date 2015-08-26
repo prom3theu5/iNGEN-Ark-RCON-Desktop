@@ -19,7 +19,6 @@ using PTK.Utils;
 using iNGen.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
-using iNGen.ViewModels.ChatViewModels;
 using Ark;
 using GalaSoft.MvvmLight.Messaging;
 

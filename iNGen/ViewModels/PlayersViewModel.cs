@@ -16,8 +16,6 @@ namespace iNGen.ViewModels
 {
     public class PlayersViewModel : ViewModelBase
     {
-        private const string SteamAPIKey = "5AA89FF9AF1C9DEADC75EF27339A6760";
-
         public ObservableCollection<Player> Players { get; set; }
         public Player SelectedPlayer { get; set; }
         public RelayCommand OpenSteamProfileCommand { get; set; }
@@ -120,28 +118,37 @@ namespace iNGen.ViewModels
 
         private async Task UpdateSteamPlayerInfo()
         {
+            if (string.IsNullOrWhiteSpace(App.ModelManager.Get<UserSettings>().GeneralSettings.SteamApiKey)) return;
             await Task.Run(async () =>
             {
-                Client client = new Client(SteamAPIKey);
+                Client client = new Client(App.ModelManager.Get<UserSettings>().GeneralSettings.SteamApiKey);
                 List<string> steamIds = Players.Select(player => player.SteamID.ToString()).ToList();
-                var banData = await client.GetPlayerBansAsync(steamIds);
-                await client.GetPlayerSummariesAsync(steamIds).ContinueWith((players) =>
+                await client.GetPlayerBansAsync(steamIds).ContinueWith(async (banData) =>
                 {
-                    if (players.Exception == null)
+                    if (banData.Exception == null)
                     {
-                        var result = players.Result.Value;
-                        foreach (SteamWeb.Models.Player player in result)
+                        await client.GetPlayerSummariesAsync(steamIds).ContinueWith((players) =>
                         {
-                            var gamePlayer = Players.FirstOrDefault(p => p.SteamID.ToString() == player.SteamID.ToString());
-                            var bans = banData.Value.FirstOrDefault(p => p.SteamId.ToString() == player.SteamID.ToString());
-                            if (gamePlayer == null) continue;
-                            gamePlayer.UpdateSteamPlayerData(player);
-                            if (bans != null)
-                                gamePlayer.UpdateSteamBansData(bans);
-                        }
+                            if (players.Exception == null)
+                            {
+                                var result = players.Result.Value;
+                                foreach (SteamWeb.Models.Player player in result)
+                                {
+                                    try
+                                    {
+                                        var gamePlayer = Players.FirstOrDefault(p => p.SteamID.ToString() == player.SteamID.ToString());
+                                        var bans = banData.Result.Value.FirstOrDefault(p => p.SteamId.ToString() == player.SteamID.ToString());
+                                        if (gamePlayer == null) continue;
+                                        gamePlayer.UpdateSteamPlayerData(player);
+                                        if (bans != null)
+                                            gamePlayer.UpdateSteamBansData(bans);
+                                    }
+                                    catch { }
+                                }
+                            }
+                        });
                     }
                 });
-
             });
         }
     }

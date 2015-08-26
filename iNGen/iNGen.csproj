@@ -144,7 +144,7 @@
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\ChatSettings.cs" />
     <Compile Include="Models\Players.cs" />
-    <Compile Include="ViewModels\ChatViewModels\ChatViewModel.cs" />
+    <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="LogManager.cs" />
     <Compile Include="Models\AppUpdates.cs" />
