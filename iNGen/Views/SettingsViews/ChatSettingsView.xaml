@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              DataContext="{Binding ChatSettings, Source={StaticResource Locator}}"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="300"
+             d:DesignHeight="600"
+             d:DesignWidth="430"
              Background="White">
     <Grid>
         <StackPanel Margin="10, 10, 10, 10" DataContext="{Binding ChatSettings}">
@@ -20,7 +21,7 @@
                     <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Open Log Directory</Label>
                 </StackPanel>
             </Button>
-            
+
             <TextBlock Text="Notifications" Margin="0, 20, 0, 0"/>
             <CheckBox Content="Enable notifications" IsChecked="{Binding IsNotificationsEnabled, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
             <StackPanel IsEnabled="{Binding IsNotificationsEnabled}">
@@ -29,12 +30,24 @@
                     <Run Text="Notification words"/>
                     <LineBreak/>
                     <Run Text="Separate multiple words with a semicolon &quot;;&quot; character." Foreground="DarkGray"/>
-                    <LineBreak/>
-                    <Run Text="Words are not case sensitive." Foreground="DarkGray"/>
                 </TextBlock>
                 <TextBox Text="{Binding NotificationString, Mode=TwoWay}" Margin="20, 5, 0, 0"/>
             </StackPanel>
-                  
+            <CheckBox Content="Enable sound notification" IsChecked="{Binding IsNotificationSoundFileEnabled, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
+            <StackPanel IsEnabled="{Binding IsNotificationSoundFileEnabled}">
+                <TextBlock Margin="20, 10, 0, 0">
+                    <Run Text="Notification Sound File"/>
+                    <LineBreak/>
+                    <Run Text="Please select either a wav or mp3 file." Foreground="DarkGray"/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding NotificationSoundFile}" Width="300" Margin="20,0,0,0"/>
+                    <ContentControl DataContext="{Binding ChatSettings, Source={StaticResource Locator}}">
+                        <Button Command="{Binding SelectSoundCommand}" Margin="10,0,0,0">BROWSE</Button>
+                    </ContentControl>
+                </StackPanel>
+            </StackPanel>
+
             <TextBlock Text="Misc" Margin="0, 20, 0, 0"/>
             <CheckBox Content="Prefix chat messages with nickname" IsChecked="{Binding IsCustomServerConsoleNameEnabled, Mode=TwoWay}" Margin="20, 10, 0, 0"/>
             <StackPanel IsEnabled="{Binding IsCustomServerConsoleNameEnabled}">

@@ -18,6 +18,8 @@ namespace iNGen.ViewModels
             SimpleIoc.Default.Register<SettingsViewModels.GeneralSettingsViewModel>();
             SimpleIoc.Default.Register<SettingsViewModels.ConsoleSettingsViewModel>();
             SimpleIoc.Default.Register<SettingsViewModels.ChatSettingsViewModel>();
+            SimpleIoc.Default.Register<Popups.NotificationPopupViewModel>();
+
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
@@ -34,6 +36,7 @@ namespace iNGen.ViewModels
         public SettingsViewModels.GeneralSettingsViewModel GeneralSettings => ServiceLocator.Current.GetInstance<SettingsViewModels.GeneralSettingsViewModel>();
         public SettingsViewModels.ChatSettingsViewModel ChatSettings => ServiceLocator.Current.GetInstance<SettingsViewModels.ChatSettingsViewModel>();
         public SettingsViewModels.ConsoleSettingsViewModel ConsoleSettings => ServiceLocator.Current.GetInstance<SettingsViewModels.ConsoleSettingsViewModel>();
+        public Popups.NotificationPopupViewModel Notification => ServiceLocator.Current.GetInstance<Popups.NotificationPopupViewModel>();
 
     }
 }

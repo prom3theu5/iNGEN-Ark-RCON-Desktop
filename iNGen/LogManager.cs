@@ -61,7 +61,7 @@ namespace iNGen
                     if (chatSettings.IsLogTimestampingEnabled)
                         chat += entry.Timestamp.ToString("(hh:mm tt) ");
 
-                    chat += entry.Message + Environment.NewLine;
+                    chat += entry.Sender + ": " + entry.Message + Environment.NewLine;
                 }
 
                 File.AppendAllText(@"Logs\" + directory + @"\Chat Log " + DateTime.Now.ToString("MM-dd-yy") + ".txt", chat);

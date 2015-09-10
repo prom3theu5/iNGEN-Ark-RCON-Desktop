@@ -1,106 +1,49 @@
-﻿using PTK.WPF;
-using ProtoBuf;
-using System;
+﻿using ProtoBuf;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GalaSoft.MvvmLight;
 
 namespace iNGen.Models
 {
     [ProtoContract]
-    public class ChatSettings: Notifiable
+    public class ChatSettings : ViewModelBase
     {
-        private bool mIsAutoScrollEnabled;
-        private bool mIsTextWrappingEnabled;
-        private bool mIsTimestampingEnabled;
-        private bool mIsNotificationsEnabled;
-        private string mNotificationString;
-        private List<string> mNotificationWords;
-        private bool mIsFlashWindowNotificationEnabled;
-        private bool mIsCustomServerConsoleNameEnabled;
-        private string mCustomServerConsoleName;
-        private bool mIsLoggingEnabled;
-        private bool mIsLogTimestampingEnabled;
-
         [ProtoMember(1)]
-        public bool IsAutoScrollEnabled
-        {
-            get { return mIsAutoScrollEnabled; }
-            set { SetField(ref mIsAutoScrollEnabled, value); }
-        }
+        public bool IsAutoScrollEnabled { get; set; }
 
         [ProtoMember(2)]
-        public bool IsTextWrappingEnabled
-        {
-            get { return mIsTextWrappingEnabled; }
-            set { SetField(ref mIsTextWrappingEnabled, value); }
-        }
+        public bool IsTextWrappingEnabled { get; set; }
 
         [ProtoMember(3)]
-        public bool IsTimestampingEnabled
-        {
-            get { return mIsTimestampingEnabled; }
-            set { SetField(ref mIsTimestampingEnabled, value); }
-        }
+        public bool IsTimestampingEnabled { get; set; }
 
         [ProtoMember(4)]
-        public bool IsNotificationsEnabled
-        {
-            get { return mIsNotificationsEnabled; }
-            set { SetField(ref mIsNotificationsEnabled, value); }
-        }
+        public bool IsNotificationsEnabled { get; set; }
 
         [ProtoMember(5)]
-        public string NotificationString
-        {
-            get { return mNotificationString; }
-            set
-            {
-                SetField(ref mNotificationString, value);
-                NotificationWords = value.Split(';').ToList();
-            }
-        }
+        public string NotificationString { get; set; }
 
-        public List<string> NotificationWords
-        {
-            get { return mNotificationWords; }
-            private set { SetField(ref mNotificationWords, value); }
-        }
+        public List<string> NotificationWords => NotificationString.Split(';').ToList();
 
         [ProtoMember(6)]
-        public bool IsFlashWindowNotificationEnabled
-        {
-            get { return mIsFlashWindowNotificationEnabled; }
-            set { SetField(ref mIsFlashWindowNotificationEnabled, value); }
-        }
+        public bool IsFlashWindowNotificationEnabled { get; set; }
 
         [ProtoMember(7)]
-        public bool IsCustomServerConsoleNameEnabled
-        {
-            get { return mIsCustomServerConsoleNameEnabled; }
-            set { SetField(ref mIsCustomServerConsoleNameEnabled, value); }
-        }
+        public bool IsCustomServerConsoleNameEnabled { get; set; }
 
         [ProtoMember(8)]
-        public string CustomServerConsoleName
-        {
-            get { return mCustomServerConsoleName; }
-            set { SetField(ref mCustomServerConsoleName, value); }
-        }
-        
+        public string CustomServerConsoleName { get; set; }
+
         [ProtoMember(9)]
-        public bool IsLoggingEnabled
-        {
-            get { return mIsLoggingEnabled; }
-            set { SetField(ref mIsLoggingEnabled, value); }
-        }
-        
+        public bool IsLoggingEnabled { get; set; }
+
         [ProtoMember(10)]
-        public bool IsLogTimestampingEnabled
-        {
-            get { return mIsLogTimestampingEnabled; }
-            set { SetField(ref mIsLogTimestampingEnabled, value); }
-        }
+        public bool IsLogTimestampingEnabled { get; set; }
+
+        [ProtoMember(11)]
+        public bool IsNotificationSoundFileEnabled { get; set; }
+
+        [ProtoMember(12)]
+        public string NotificationSoundFile { get; set; }
     }
 }

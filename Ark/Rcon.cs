@@ -252,45 +252,82 @@ namespace Ark
 
         private void OnServerConnectionFailed(object sender, ServerConnectionEventArgs args)
         {
-            args.ConnectionInfo = CurrentServerInfo;
-            PurgeClient();
+            try
+            {
+                args.ConnectionInfo = CurrentServerInfo;
+                PurgeClient();
 
-            if(ServerConnectionFailed != null)
-                ServerConnectionFailed(this, args);
+                if (ServerConnectionFailed != null)
+                    ServerConnectionFailed(this, args);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         public void OnServerConnectionDropped(object sender, ServerConnectionEventArgs args)
         {
-            args.ConnectionInfo = CurrentServerInfo;
-            PurgeClient();
+            try
+            {
+                args.ConnectionInfo = CurrentServerInfo;
+                PurgeClient();
 
-            if(ServerConnectionDropped != null)
-                ServerConnectionDropped(this, args);
+                if (ServerConnectionDropped != null)
+                    ServerConnectionDropped(this, args);
+            }
+            catch
+            {
+                // ignored
+            }
+
         }
 
         public void OnServerConnectionSucceeded(object sender, ServerConnectionEventArgs args)
         {
-            args.ConnectionInfo = CurrentServerInfo;
-            if(ServerConnectionSucceeded != null)
-                ServerConnectionSucceeded(this, args);
-            HostnameUpdated(this, new HostnameEventArgs() { NewHostname = CurrentServerInfo.Hostname, Timestamp = DateTime.Now });
-            RequestAuth(CurrentServerInfo.Password);
+            try
+            {
+                args.ConnectionInfo = CurrentServerInfo;
+                if (ServerConnectionSucceeded != null)
+                    ServerConnectionSucceeded(this, args);
+                if (HostnameUpdated != null)
+                    HostnameUpdated(this,
+                        new HostnameEventArgs() {NewHostname = CurrentServerInfo.Hostname, Timestamp = DateTime.Now});
+                RequestAuth(CurrentServerInfo.Password);
+            }
+            catch {  
+                // ignored 
+            }
         }
 
         private void OnServerConnectionStarting(object sender, ServerConnectionEventArgs args)
         {
-            args.ConnectionInfo = CurrentServerInfo;
-            if(ServerConnectionStarting != null)
-                ServerConnectionStarting(this, args);
+            try
+            {
+                args.ConnectionInfo = CurrentServerInfo;
+                if (ServerConnectionStarting != null)
+                    ServerConnectionStarting(this, args);
+            }
+            catch
+            {
+                //ignored
+            }
         }
 
         private void OnServerConnectionDisconnected(object sender, ServerConnectionEventArgs args)
         {
-            args.ConnectionInfo = CurrentServerInfo;
-            PurgeClient();
+            try
+            {
+                args.ConnectionInfo = CurrentServerInfo;
+                PurgeClient();
 
-            if(ServerConnectionDisconnected != null)
-                ServerConnectionDisconnected(this, args);
+                if (ServerConnectionDisconnected != null)
+                    ServerConnectionDisconnected(this, args);
+            }
+            catch
+            {
+                //ignored
+            }
         }
         #endregion Client Handlers
 

@@ -139,6 +139,7 @@
     <Compile Include="Helpers\MessageContentPresenter.cs" />
     <Compile Include="Helpers\MessageTemplateSelector.cs" />
     <Compile Include="Helpers\PasswordBoxAssistant.cs" />
+    <Compile Include="Helpers\SoundManager.cs" />
     <Compile Include="Helpers\StringFormatConverter.cs" />
     <Compile Include="Helpers\TaskCreationDestruction.cs" />
     <Compile Include="Models\ChatMessage.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="ViewModels\NavigationViewModel.cs" />
     <Compile Include="ViewModels\iNGenSettingsViewModel.cs" />
     <Compile Include="ViewModels\PlayersViewModel.cs" />
+    <Compile Include="ViewModels\Popups\NotificationPopupViewModel.cs" />
     <Compile Include="ViewModels\ScheduledCommandsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModels\ChatSettingsViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModels\ConsoleSettingsViewModel.cs" />
@@ -194,6 +196,9 @@
     </Compile>
     <Compile Include="Views\PlayersView.xaml.cs">
       <DependentUpon>PlayersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\NotificationPopup.xaml.cs">
+      <DependentUpon>NotificationPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ScheduledCommandsView.xaml.cs">
       <DependentUpon>ScheduledCommandsView.xaml</DependentUpon>
@@ -301,6 +306,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PlayersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Popups\NotificationPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -604,7 +613,26 @@
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="MediaPlayer">
+      <Guid>{22D6F304-B0F6-11D0-94AB-0080C74C7E95}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

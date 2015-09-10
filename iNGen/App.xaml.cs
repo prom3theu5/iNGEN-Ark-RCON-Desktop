@@ -17,35 +17,40 @@ namespace iNGen
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         public static ModelManager ModelManager = new ModelManager("UserData");
         public static Rcon ArkRcon = new Rcon();
         public static LogManager LogManager = new LogManager();
         public static EventManager EventManager = new EventManager();
         public static ViewModels.ViewModelLocator Locator { get; private set; }
-        private TaskbarIcon tb;
+        public static TaskbarIcon Tb;
 
         public App()
         {
             InitializeComponent();
             Debug.WriteLine(GetErrorFile());
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            tb = (TaskbarIcon)FindResource("iNGenTaskbarIcon");
-            tb.TrayMouseDoubleClick += tb_TrayMouseDoubleClick;
+            Tb = (TaskbarIcon)FindResource("iNGenTaskbarIcon");
+            if (Tb != null) Tb.TrayMouseDoubleClick += tb_TrayMouseDoubleClick;
             Locator = new ViewModels.ViewModelLocator();
         }
 
-        private string GetErrorFile()
+        private static string GetErrorFile()
         {
             return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\iNGenError.txt";
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             
             var exception = e.ExceptionObject as Exception;
             if (exception == null) return;
+            LogErrorMessage(exception);
+        }
+
+        public static void LogErrorMessage(Exception exception)
+        {
             string errorMessage = $"An unhandled exception occurred: {exception.Message}";
             using (var sw = new StreamWriter(GetErrorFile(), true))
             {
@@ -61,13 +66,14 @@ namespace iNGen
             MessageBox.Show("An Error Occurred. Please Report this on GitHub. There is a log on your desktop.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        void tb_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        static void tb_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            var window = Application.Current.MainWindow as MetroWindow;
+            var window = Current.MainWindow as MetroWindow;
 
-            if (!window.IsVisible) window.Show();
-            if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
+            if (window != null && !window.IsVisible) window.Show();
+            if (window != null && window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
 
+            if (window == null) return;
             window.Show();
             window.Activate();
             window.Topmost = true;
@@ -77,7 +83,7 @@ namespace iNGen
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            Current.Shutdown();
         }
 
         private void ShowWindow_Click(object sender, RoutedEventArgs e)

@@ -9,22 +9,26 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 using PTK.Utils;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using iNGen.Views;
 using iNGen.Helpers;
+using iNGen.Views.Popups;
+using PTK.Extensions;
 
 namespace iNGen.ViewModels
 {
-    public class ChatViewModel: ViewModelBase
+    public class ChatViewModel : ViewModelBase
     {
-        public ChatSettings ChatSettings {get; set;}
+        public ChatSettings ChatSettings { get; set; }
         public ChatView View { get; set; }
         public FixedSizeObservableCollection<ChatMessage> ChatMessages { get; set; }
         public bool EnableChat { get; set; }
         public bool DisableChat { get; set; }
-        public int NewMessageLength { get { return NewMessage.Length; } }
+        public int NewMessageLength => NewMessage.Length;
         private Task _getChatMessagesTask;
         private CancellationTokenSource _cancellationToken;
         public RelayCommand ClearChatCommand { get; set; }
@@ -34,7 +38,7 @@ namespace iNGen.ViewModels
 
         public RelayCommand NewMessageEnterKeyCommand { get; set; }
         public string NewMessage { get; set; }
-        private MessageSide curside;
+        private MessageSide _curside;
 
         public ChatViewModel()
         {
@@ -47,18 +51,18 @@ namespace iNGen.ViewModels
             #region Rcon Events
             App.ArkRcon.ChatLogUpdated += (s, args) =>
             {
-                    addTextRecieved(args);
+                AddTextRecieved(args);
             };
 
             App.ArkRcon.SentMessageUpdated += (s, args) =>
             {
-                    addTextSend(args);
+                AddTextSend(args);
             };
 
             App.ArkRcon.ServerAuthSucceeded += (s, args) =>
             {
                 if (App.ModelManager.Get<UserSettings>().GeneralSettings.AutoStartChat)
-                   DoEnableChat();
+                    DoEnableChat();
             };
 
             App.ArkRcon.ServerConnectionDisconnected += (s, args) =>
@@ -83,10 +87,7 @@ namespace iNGen.ViewModels
         private void NewMessageEnterKeyPress()
         {
             if (string.IsNullOrWhiteSpace(NewMessage)) return;
-            if (ChatSettings.IsCustomServerConsoleNameEnabled)
-                App.ArkRcon.Say(NewMessage, ChatSettings.CustomServerConsoleName);
-            else
-                App.ArkRcon.Say(NewMessage, null);
+            App.ArkRcon.Say(NewMessage, ChatSettings.IsCustomServerConsoleNameEnabled ? ChatSettings.CustomServerConsoleName : null);
 
             NewMessage = string.Empty;
             if (ChatSettings.IsAutoScrollEnabled)
@@ -100,9 +101,8 @@ namespace iNGen.ViewModels
         {
             DisableChat = false;
             EnableChat = true;
-            if (_cancellationToken != null) _cancellationToken.Cancel();
-            if (_getChatMessagesTask != null)
-                _getChatMessagesTask.Wait();
+            _cancellationToken?.Cancel();
+            _getChatMessagesTask?.Wait();
         }
 
         private void DoEnableChat()
@@ -110,7 +110,7 @@ namespace iNGen.ViewModels
             EnableChat = false;
             DisableChat = true;
             _cancellationToken = new CancellationTokenSource();
-            _getChatMessagesTask = Repeat.Interval(TimeSpan.FromSeconds(3), () => GetChatMessagesTask(), _cancellationToken.Token, true);
+            _getChatMessagesTask = Repeat.Interval(TimeSpan.FromSeconds(3), GetChatMessagesTask, _cancellationToken.Token, true);
         }
 
         private void ClearChat()
@@ -119,23 +119,21 @@ namespace iNGen.ViewModels
         }
 
         //Craptastic fudged in Boolean "GotChatResponse" to see if the server is still responding to requests. They better fix this crap soon.....
-        private async void GetChatMessagesTask()
+        private static async void GetChatMessagesTask()
         {
-          await App.Current.Dispatcher.BeginInvoke(new Action(async ()=>{
-            App.ArkRcon.ExecCommand(Ark.Opcode.ChatMessage, "getchat");
-            await Task.Delay(3000);
-            if (!App.ArkRcon.GotChatResponse)
+            await Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
+                App.ArkRcon.ExecCommand(Ark.Opcode.ChatMessage, "getchat");
+                await Task.Delay(3000);
+                if (App.ArkRcon.GotChatResponse) return;
                 App.ArkRcon.Disconnect();
                 await App.ArkRcon.Connect(App.Locator.Home.SelectedServer);
-            }
-          }));
+            }));
         }
 
-        private void addTextSend(ChatLogEventArgs args)
+        private void AddTextSend(ChatLogEventArgs args)
         {
-            var message = new ChatMessage();
-            message.PrevSide = curside;
+            var message = new ChatMessage { PrevSide = _curside };
             if (ChatSettings.IsCustomServerConsoleNameEnabled)
                 message.SenderName = string.IsNullOrWhiteSpace(ChatSettings.CustomServerConsoleName) ? "Server Admin" : ChatSettings.CustomServerConsoleName;
             else
@@ -145,32 +143,60 @@ namespace iNGen.ViewModels
             if (ChatSettings.IsTimestampingEnabled)
                 message.Timestamp = args.Timestamp;
             ChatMessages.Add(message);
-            curside = MessageSide.Me;
+            _curside = MessageSide.Me;
             if (ChatSettings.IsAutoScrollEnabled)
             {
                 View.ScrollConversationToEnd();
             }
         }
 
-        private void addTextRecieved(ChatLogEventArgs args)
+        private void AddTextRecieved(ChatLogEventArgs args)
         {
-            var message = new ChatMessage();
-            message.PrevSide = curside;
-            message.SenderName = args.Sender;
-            message.Text = args.Message;
-            message.Side = MessageSide.You;
+            var message = new ChatMessage
+            {
+                PrevSide = _curside,
+                SenderName = args.Sender,
+                Text = args.Message,
+                Side = MessageSide.You
+            };
 
             if (ChatSettings.IsTimestampingEnabled)
                 message.Timestamp = args.Timestamp;
 
             ChatMessages.Add(message);
-            curside = MessageSide.You;
+            _curside = MessageSide.You;
             if (ChatSettings.IsAutoScrollEnabled)
             {
                 View.ScrollConversationToEnd();
             }
+
+            try
+            {
+                if (!ChatSettings.IsNotificationsEnabled || ChatSettings.NotificationString == null) return;
+
+                if (ChatSettings.NotificationWords.Any(s => message.Text.Contains(s)))
+                {
+                    ShowCustomBalloon($"{message.SenderName}: {message.Text}");
+                }
+
+                if (ChatSettings.IsFlashWindowNotificationEnabled)
+                    Application.Current.MainWindow.FlashWindow();
+
+                if (!ChatSettings.IsNotificationSoundFileEnabled || ChatSettings.NotificationSoundFile == null) return;
+                    SoundManager.PlayFile(ChatSettings.NotificationSoundFile);
+            }
+            catch (Exception ex)
+            {
+                App.LogErrorMessage(ex);
+            }
         }
 
-        
+        private static void ShowCustomBalloon(string message)
+        {
+            App.Locator.Notification.NotificationCaption = "Chat Notification";
+            App.Locator.Notification.NotificationMessage = message;
+            var balloon = new NotificationPopup();
+            App.Tb.ShowCustomBalloon(balloon, PopupAnimation.Slide, 5000);
+        }
     }
 }
