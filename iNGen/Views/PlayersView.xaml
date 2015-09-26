@@ -21,8 +21,8 @@
             <Separator />
             <MenuItem Header="Add To Whitelist"  Command="{Binding WhitelistSelectedCommand}" />
             <MenuItem Header="Remove From Whitelist" Command="{Binding UnWhitelistSelectedCommand}" />
-            <!--<Separator />
-            <MenuItem Header="Private Message" Command="{Binding PMSelectedPlayerCommand}"/>-->
+            <Separator />
+            <MenuItem Header="Private Message" Command="{Binding PMSelectedPlayerCommand}"/>
         </ContextMenu>
         
     </UserControl.Resources>

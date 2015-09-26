@@ -25,6 +25,7 @@ namespace iNGen.ViewModels
         public TaskCommands SelectedCommandType { get; set; }
         public bool AddTaskCommandWindowVis { get; set; }
         public bool AddTaskWindowVis { get; set; }
+        public bool SendPrivateMessageVis { get; set; }
         public string TaskIntervalPeriodVariable { get; set; }
         public string NewTaskDelayPeriodVariable { get; set; }
         public string NewTaskBroadcastVariable { get; set; }
@@ -56,6 +57,7 @@ namespace iNGen.ViewModels
             NewScheduledTask = new ScheduledTask();
             AddTaskCommandWindowVis = false;
             AddTaskWindowVis = false;
+            SendPrivateMessageVis = false;
             ConfirmAddNewTaskCommand = new RelayCommand(ConfirmAddNewTask);
             CancelAddNewTaskCommand = new RelayCommand(CancelAddNewTask);
             DoAddTaskCommand = new RelayCommand(DoAddTask);
@@ -76,6 +78,12 @@ namespace iNGen.ViewModels
             {
                 case "OpenAddNewTask":
                     AddTaskWindowVis = true;
+                    break;
+                case "ShowPMWindow":
+                    SendPrivateMessageVis = true;
+                    break;
+                case "PMMessageSent":
+                    SendPrivateMessageVis = false;
                     break;
                 default:
                     return;

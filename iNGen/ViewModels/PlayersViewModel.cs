@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using iNGen.Models;
 using PTK.WPF;
 using SteamWeb;
@@ -27,6 +28,8 @@ namespace iNGen.ViewModels
         public RelayCommand UnWhitelistSelectedCommand { get; set; }
         public RelayCommand PMSelectedPlayerCommand { get; set; }
         public RelayCommand RefreshPlayersCommand { get; set; }
+        public RelayCommand SendActualPMCommand { get; set; }
+        public RelayCommand CancelSendPMCommand { get; set; }
         public string PrivateMessage { get; set; }
 
         public PlayersViewModel()
@@ -56,11 +59,33 @@ namespace iNGen.ViewModels
             UnWhitelistSelectedCommand = new RelayCommand(UnWhitelistSelectedPlayer);
             PMSelectedPlayerCommand = new RelayCommand(PMSelectedPlayer);
             RefreshPlayersCommand = new RelayCommand(RefreshPlayers);
-            
+            SendActualPMCommand = new RelayCommand(SendActualPM);
+            CancelSendPMCommand = new RelayCommand(CancelSendPM);
+
+
             #endregion
 
             PrivateMessage = string.Empty;
 
+        }
+
+        private void CancelSendPM()
+        {
+            Messenger.Default.Send(new NotificationMessage("PMMessageSent"));
+            PrivateMessage = string.Empty;
+        }
+
+        private void SendActualPM()
+        {
+            if (SelectedPlayer == null) return;
+            if (string.IsNullOrWhiteSpace(PrivateMessage) || string.IsNullOrEmpty(PrivateMessage)) return;
+            App.ArkRcon.SendPrivateMessage(PrivateMessage, SelectedPlayer.SteamID);
+            if (App.Locator.ConsoleSettings.ConsoleSettings.IsTimestampingEnabled)
+                App.Locator.Console.ConsoleMessages.Add($"{DateTime.Now.ToString("(hh:mm tt)" )} PM Sent to Player: {SelectedPlayer.Name}, with Message: {PrivateMessage}");
+            else
+                App.Locator.Console.ConsoleMessages.Add($"PM Sent to Player: {SelectedPlayer.Name}, with Message: {PrivateMessage}");
+            Messenger.Default.Send(new NotificationMessage("PMMessageSent"));
+            PrivateMessage = string.Empty;
         }
 
         private void RefreshPlayers()
@@ -113,7 +138,7 @@ namespace iNGen.ViewModels
         private void PMSelectedPlayer()
         {
             if (SelectedPlayer == null) return;
-            
+            Messenger.Default.Send(new NotificationMessage("ShowPMWindow"));
         }
 
         private async Task UpdateSteamPlayerInfo()

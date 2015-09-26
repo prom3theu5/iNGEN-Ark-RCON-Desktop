@@ -137,6 +137,41 @@
                     </StackPanel>
                 </StackPanel>
             </metro:Flyout>
+            <metro:Flyout Header="Send Private Message"
+                            x:Name="SendPrivateMessageWindow"
+                             AnimateOpacity="True"
+                             IsModal="True"
+                             Theme="Adapt"
+                             Width="400"
+                             Position="Right"
+                             IsOpen="{Binding SendPrivateMessageVis}"
+                             CloseButtonVisibility="Collapsed"
+                             >
+                <StackPanel Orientation="Vertical" Margin="20" DataContext="{Binding Players, Source={StaticResource Locator}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Selected Player</TextBlock>
+                        <TextBlock Margin="10,0,0,0" Text="{Binding SelectedPlayer.Name}" Foreground="ForestGreen"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Enter Message</TextBlock>
+                        <TextBox Margin="10,0,0,0" Width="240" Text="{Binding PrivateMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" Height="150px" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10">
+                        <Button Command="{Binding CancelSendPMCommand}" Width="150" HorizontalAlignment="Left" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/cancel.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Cancel PM</Label>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding SendActualPMCommand}" Width="150" HorizontalAlignment="Left" Margin="20,0,0,0" Height="30">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="25" Source="/iNGen;component/Resources/Images/confirm.png" />
+                                <Label Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">Send PM</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </metro:Flyout>
         </metro:FlyoutsControl>
     </metro:MetroWindow.Flyouts>
 
